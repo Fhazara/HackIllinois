@@ -1,0 +1,69 @@
+// Prisma schema for Thrift — product search assistant
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Models ────────────────────────────────────────────────────────────────────
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  searchRequests SearchRequest[]
+
+  @@map("users")
+}
+
+enum SearchRequestStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model SearchRequest {
+  id          String              @id @default(cuid())
+  title       String
+  description String
+  budget      Float?
+  imageUrl    String?             @map("image_url") // AI-generated product image
+  status      SearchRequestStatus @default(PENDING)
+  createdAt   DateTime            @default(now()) @map("created_at")
+  updatedAt   DateTime            @updatedAt @map("updated_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  results ProductResult[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("search_requests")
+}
+
+model ProductResult {
+  id         String   @id @default(cuid())
+  name       String
+  price      Float?
+  url        String
+  imageUrl   String?  @map("image_url")
+  source     String? // e.g. "eBay", "Facebook Marketplace", "Craigslist"
+  matchNotes String?  @map("match_notes") // why this result matches the request
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  searchRequestId String        @map("search_request_id")
+  searchRequest   SearchRequest @relation(fields: [searchRequestId], references: [id], onDelete: Cascade)
+
+  @@index([searchRequestId])
+  @@map("product_results")
+}
