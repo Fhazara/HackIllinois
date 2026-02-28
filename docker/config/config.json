@@ -1,0 +1,32 @@
+{
+    "model": {
+        "default": "gpt-5",
+        "provider": "openai"
+    },
+    "skills": {
+        "enabled": true,
+        "directory": "/home/node/.openclaw/workspace/skills"
+    },
+    "agent": {
+        "name": "Thrift Agent",
+        "systemPrompt": "You are the Thrift product search agent. Your job is to help users find second-hand and vintage products across multiple online marketplaces. When a user describes what they're looking for, use the product-search skill to find matching items. Always present results clearly with prices, sources, and direct links. Be enthusiastic about great deals."
+    },
+    "gateway": {
+        "host": "0.0.0.0",
+        "port": 18789,
+        "cors": {
+            "origin": [
+                "http://localhost:3000"
+            ]
+        }
+    },
+    "security": {
+        "toolPolicy": {
+            "allow": [
+                "shell",
+                "read_file",
+                "write_file"
+            ]
+        }
+    }
+}

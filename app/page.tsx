@@ -1,25 +1,27 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 const scrapbookItems = [
-  { id: 0,  src: "/jeans.png",         label: "jeans",         top: "3%",                 left: "1%",                  rotation: -11, duration: 10.0, delay: 0,   w: 172, h: 212 },
-  { id: 1,  src: "/shirt.png",         label: "shirt",         top: "2%",                 left: "17%",                 rotation: 4,   duration: 11.5, delay: 1.4, w: 178, h: 218 },
-  { id: 2,  src: "/tank_top.png",      label: "tank top",      top: "1%",                 left: "36%",                 rotation: -5,  duration: 13.0, delay: 0.6, w: 170, h: 210 },
-  { id: 3,  src: "/candle.png",        label: "candle",        top: "5%",                 left: "55%",                 rotation: 8,   duration: 10.8, delay: 2.2, w: 176, h: 216 },
-  { id: 4,  src: "/vase.png",          label: "vase",          top: "2%",                 left: "calc(93% - 173px)",   rotation: -4,  duration: 12.5, delay: 3.0, w: 173, h: 213 },
-  { id: 5,  src: "/slacks.png",        label: "slacks",        top: "30%",                left: "0%",                  rotation: -16, duration: 11.0, delay: 1.2, w: 180, h: 220 },
-  { id: 6,  src: "/lamp1.png",         label: "lamp",          top: "42%",                left: "11%",                 rotation: 6,   duration: 12.0, delay: 0.3, w: 174, h: 214 },
-  { id: 7,  src: "/dress.png",         label: "dress",         top: "28%",                left: "calc(98% - 177px)",   rotation: 9,   duration: 10.5, delay: 1.8, w: 177, h: 217 },
-  { id: 8,  src: "/lamp2.png",         label: "lamp",          top: "52%",                left: "calc(90% - 171px)",   rotation: -7,  duration: 13.5, delay: 2.8, w: 171, h: 211 },
-  { id: 9,  src: "/bomber_jacket.png", label: "bomber jacket", top: "calc(98% - 215px)",  left: "2%",                  rotation: 5,   duration: 11.2, delay: 2.5, w: 175, h: 215 },
-  { id: 10, src: "/blazer.png",        label: "blazer",        top: "calc(96% - 219px)",  left: "20%",                 rotation: -8,  duration: 12.8, delay: 0.6, w: 179, h: 219 },
-  { id: 11, src: "/cami.png",          label: "cami",          top: "calc(99% - 213px)",  left: "42%",                 rotation: 12,  duration: 11.8, delay: 1.7, w: 173, h: 213 },
-  { id: 12, src: "/top.png",           label: "top",           top: "calc(97% - 216px)",  left: "calc(86% - 176px)",   rotation: -13, duration: 10.3, delay: 3.4, w: 176, h: 216 },
+  { id: 0, src: "/jeans.png", label: "jeans", top: "3%", left: "1%", rotation: -11, duration: 10.0, delay: 0, w: 172, h: 212 },
+  { id: 1, src: "/shirt.png", label: "shirt", top: "2%", left: "17%", rotation: 4, duration: 11.5, delay: 1.4, w: 178, h: 218 },
+  { id: 2, src: "/tank_top.png", label: "tank top", top: "1%", left: "36%", rotation: -5, duration: 13.0, delay: 0.6, w: 170, h: 210 },
+  { id: 3, src: "/candle.png", label: "candle", top: "5%", left: "55%", rotation: 8, duration: 10.8, delay: 2.2, w: 176, h: 216 },
+  { id: 4, src: "/vase.png", label: "vase", top: "2%", left: "calc(93% - 173px)", rotation: -4, duration: 12.5, delay: 3.0, w: 173, h: 213 },
+  { id: 5, src: "/slacks.png", label: "slacks", top: "30%", left: "0%", rotation: -16, duration: 11.0, delay: 1.2, w: 180, h: 220 },
+  { id: 6, src: "/lamp1.png", label: "lamp", top: "42%", left: "11%", rotation: 6, duration: 12.0, delay: 0.3, w: 174, h: 214 },
+  { id: 7, src: "/dress.png", label: "dress", top: "28%", left: "calc(98% - 177px)", rotation: 9, duration: 10.5, delay: 1.8, w: 177, h: 217 },
+  { id: 8, src: "/lamp2.png", label: "lamp", top: "52%", left: "calc(90% - 171px)", rotation: -7, duration: 13.5, delay: 2.8, w: 171, h: 211 },
+  { id: 9, src: "/bomber_jacket.png", label: "bomber jacket", top: "calc(98% - 215px)", left: "2%", rotation: 5, duration: 11.2, delay: 2.5, w: 175, h: 215 },
+  { id: 10, src: "/blazer.png", label: "blazer", top: "calc(96% - 219px)", left: "20%", rotation: -8, duration: 12.8, delay: 0.6, w: 179, h: 219 },
+  { id: 11, src: "/cami.png", label: "cami", top: "calc(99% - 213px)", left: "42%", rotation: 12, duration: 11.8, delay: 1.7, w: 173, h: 213 },
+  { id: 12, src: "/top.png", label: "top", top: "calc(97% - 216px)", left: "calc(86% - 176px)", rotation: -13, duration: 10.3, delay: 3.4, w: 176, h: 216 },
 ];
 
 export default function Home() {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [exploded, setExploded] = useState(false);
   const [positions, setPositions] = useState<Record<number, { x: number; y: number }>>({});
@@ -156,7 +158,7 @@ export default function Home() {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && query.trim() && console.log("Searching:", query)}
+              onKeyDown={(e) => e.key === "Enter" && query.trim() && router.push(`/search?q=${encodeURIComponent(query)}`)}
               placeholder="a vintage leather jacket..."
               autoFocus
               style={{
@@ -174,7 +176,7 @@ export default function Home() {
               }}
             />
             <button
-              onClick={() => query.trim() && console.log("Searching:", query)}
+              onClick={() => query.trim() && router.push(`/search?q=${encodeURIComponent(query)}`)}
               style={{
                 background: "none",
                 border: "none",

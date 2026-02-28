@@ -1,0 +1,36 @@
+# ─────────────────────────────────────────────────────────────
+#  Thrift Product Search Agent — Docker Compose
+# ─────────────────────────────────────────────────────────────
+services:
+  openclaw-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: thrift-product-agent
+    restart: unless-stopped
+    ports:
+      - "18789:18789"
+    env_file:
+      - .env
+    environment:
+      - HOST=0.0.0.0
+      # OpenClaw model config (GPT 5.0)
+      - OPENCLAW_MODEL=gpt-5
+      - OPENCLAW_MODEL_PROVIDER=openai
+      # Python venv on PATH
+      - PATH=/opt/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    volumes:
+      # Persist agent data (conversations, session state, etc.)
+      - openclaw_data:/home/node/.openclaw
+      # Mount skills for live editing during development
+      - ./skills:/home/node/.openclaw/workspace/skills:ro
+    healthcheck:
+      test: [ "CMD", "curl", "-sf", "http://localhost:18789/api/v1/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  openclaw_data:
+    driver: local

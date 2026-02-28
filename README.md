@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Thrift - AI Product Search
 
-## Getting Started
+An agentic product discovery platform that uses LLMs (Anthropic Claude 3.5 Sonnet) and a custom OpenClaw web scraping agent to find real second-hand and vintage products across the web based on natural language queries.
 
-First, run the development server:
+## Architecture
+- **Frontend/Backend:** Next.js (React), storing sessions in `sessionStorage`
+- **Conversational LLM UI:** Modal Serverless Python App (`modal/product_research_llm.py`) utilizing Anthropic API.
+- **Agentic Scraper:** Containerized OpenClaw instance with the `product-search` skill, utilizing the Decodo scraping API and OpenAI.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Prerequisites
+- Node.js (v20+)
+- Docker Dekstop
+- Python 3.12+ (for Modal)
+- accounts on [Modal](https://modal.com/), Anthropic, OpenAI, and Decodo
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 1. Configure the LLM Chat UI (Modal)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The conversational assistant that extracts requirements from the user is deployed to Modal.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Ensure you have the `modal` CLI installed (`pip install modal`) and authenticated (`modal token new`).
+2. Add your Anthropic API Key to Modal:
+   ```bash
+   modal secret create anthropic-secret ANTHROPIC_API_KEY="your-key-here"
+   ```
+3. Deploy the Modal App:
+   ```bash
+   modal deploy modal/product_research_llm.py
+   ```
+4. Copy the deployed ASGI App URL (e.g., `https://your-namespace--product-research-llm-fastapi-app.modal.run`) and paste it into the root `.env` file for **`MODAL_CHAT_URL`**.
 
-## Learn More
+## 2. Start the OpenClaw Scraping Agent (Docker)
 
-To learn more about Next.js, take a look at the following resources:
+The agent responsible for actually surfing Etsy, eBay, etc., runs inside a Docker container to ensure its dependencies and the OpenClaw gateway run smoothly.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Open the `docker/` directory.
+2. Edit `docker/.env` with your API keys:
+   ```env
+   OPENAI_API_KEY=your-openai-key-here
+   DECODO_TOKEN=your-decodo-basic-auth-token-here
+   ```
+3. Start the Docker container:
+   ```bash
+   cd docker
+   docker compose up -d --build
+   ```
+4. The OpenClaw scraping agent is now bound to your system's `localhost:18789` and the Next.js API route will execute its python scraper directly using `docker exec`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 3. Run the Next.js Frontend
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Ensure the root `.env` file is properly configured with your database URL, Modal URL, and API keys.
+2. Ensure you have pushed the Prisma schema to your database if you want to use the DB for logging (optional for core flow):
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+5. Navigate to `http://localhost:3000` to begin your product search!
