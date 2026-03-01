@@ -38,33 +38,33 @@ export type AlertSubscriptionMinAggregateOutputType = {
   id: string | null
   email: string | null
   phone: string | null
-  isActive: boolean | null
-  lastCheckedAt: Date | null
-  createdAt: Date | null
+  last_checked_at: Date | null
+  created_at: Date | null
   query: string | null
   budget: number | null
+  is_active: boolean | null
 }
 
 export type AlertSubscriptionMaxAggregateOutputType = {
   id: string | null
   email: string | null
   phone: string | null
-  isActive: boolean | null
-  lastCheckedAt: Date | null
-  createdAt: Date | null
+  last_checked_at: Date | null
+  created_at: Date | null
   query: string | null
   budget: number | null
+  is_active: boolean | null
 }
 
 export type AlertSubscriptionCountAggregateOutputType = {
   id: number
   email: number
   phone: number
-  isActive: number
-  lastCheckedAt: number
-  createdAt: number
+  last_checked_at: number
+  created_at: number
   query: number
   budget: number
+  is_active: number
   _all: number
 }
 
@@ -81,33 +81,33 @@ export type AlertSubscriptionMinAggregateInputType = {
   id?: true
   email?: true
   phone?: true
-  isActive?: true
-  lastCheckedAt?: true
-  createdAt?: true
+  last_checked_at?: true
+  created_at?: true
   query?: true
   budget?: true
+  is_active?: true
 }
 
 export type AlertSubscriptionMaxAggregateInputType = {
   id?: true
   email?: true
   phone?: true
-  isActive?: true
-  lastCheckedAt?: true
-  createdAt?: true
+  last_checked_at?: true
+  created_at?: true
   query?: true
   budget?: true
+  is_active?: true
 }
 
 export type AlertSubscriptionCountAggregateInputType = {
   id?: true
   email?: true
   phone?: true
-  isActive?: true
-  lastCheckedAt?: true
-  createdAt?: true
+  last_checked_at?: true
+  created_at?: true
   query?: true
   budget?: true
+  is_active?: true
   _all?: true
 }
 
@@ -201,11 +201,11 @@ export type AlertSubscriptionGroupByOutputType = {
   id: string
   email: string | null
   phone: string | null
-  isActive: boolean
-  lastCheckedAt: Date
-  createdAt: Date
+  last_checked_at: Date | null
+  created_at: Date
   query: string
   budget: number | null
+  is_active: boolean
   _count: AlertSubscriptionCountAggregateOutputType | null
   _avg: AlertSubscriptionAvgAggregateOutputType | null
   _sum: AlertSubscriptionSumAggregateOutputType | null
@@ -235,24 +235,24 @@ export type AlertSubscriptionWhereInput = {
   id?: Prisma.StringFilter<"AlertSubscription"> | string
   email?: Prisma.StringNullableFilter<"AlertSubscription"> | string | null
   phone?: Prisma.StringNullableFilter<"AlertSubscription"> | string | null
-  isActive?: Prisma.BoolFilter<"AlertSubscription"> | boolean
-  lastCheckedAt?: Prisma.DateTimeFilter<"AlertSubscription"> | Date | string
-  createdAt?: Prisma.DateTimeFilter<"AlertSubscription"> | Date | string
+  last_checked_at?: Prisma.DateTimeNullableFilter<"AlertSubscription"> | Date | string | null
+  created_at?: Prisma.DateTimeFilter<"AlertSubscription"> | Date | string
   query?: Prisma.StringFilter<"AlertSubscription"> | string
   budget?: Prisma.FloatNullableFilter<"AlertSubscription"> | number | null
-  seenItems?: Prisma.SeenItemListRelationFilter
+  is_active?: Prisma.BoolFilter<"AlertSubscription"> | boolean
+  seen_items?: Prisma.SeenItemListRelationFilter
 }
 
 export type AlertSubscriptionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
-  isActive?: Prisma.SortOrder
-  lastCheckedAt?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  last_checked_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  created_at?: Prisma.SortOrder
   query?: Prisma.SortOrder
   budget?: Prisma.SortOrderInput | Prisma.SortOrder
-  seenItems?: Prisma.SeenItemOrderByRelationAggregateInput
+  is_active?: Prisma.SortOrder
+  seen_items?: Prisma.SeenItemOrderByRelationAggregateInput
 }
 
 export type AlertSubscriptionWhereUniqueInput = Prisma.AtLeast<{
@@ -262,23 +262,23 @@ export type AlertSubscriptionWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.AlertSubscriptionWhereInput | Prisma.AlertSubscriptionWhereInput[]
   email?: Prisma.StringNullableFilter<"AlertSubscription"> | string | null
   phone?: Prisma.StringNullableFilter<"AlertSubscription"> | string | null
-  isActive?: Prisma.BoolFilter<"AlertSubscription"> | boolean
-  lastCheckedAt?: Prisma.DateTimeFilter<"AlertSubscription"> | Date | string
-  createdAt?: Prisma.DateTimeFilter<"AlertSubscription"> | Date | string
+  last_checked_at?: Prisma.DateTimeNullableFilter<"AlertSubscription"> | Date | string | null
+  created_at?: Prisma.DateTimeFilter<"AlertSubscription"> | Date | string
   query?: Prisma.StringFilter<"AlertSubscription"> | string
   budget?: Prisma.FloatNullableFilter<"AlertSubscription"> | number | null
-  seenItems?: Prisma.SeenItemListRelationFilter
+  is_active?: Prisma.BoolFilter<"AlertSubscription"> | boolean
+  seen_items?: Prisma.SeenItemListRelationFilter
 }, "id">
 
 export type AlertSubscriptionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
-  isActive?: Prisma.SortOrder
-  lastCheckedAt?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  last_checked_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  created_at?: Prisma.SortOrder
   query?: Prisma.SortOrder
   budget?: Prisma.SortOrderInput | Prisma.SortOrder
+  is_active?: Prisma.SortOrder
   _count?: Prisma.AlertSubscriptionCountOrderByAggregateInput
   _avg?: Prisma.AlertSubscriptionAvgOrderByAggregateInput
   _max?: Prisma.AlertSubscriptionMaxOrderByAggregateInput
@@ -293,103 +293,103 @@ export type AlertSubscriptionScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"AlertSubscription"> | string
   email?: Prisma.StringNullableWithAggregatesFilter<"AlertSubscription"> | string | null
   phone?: Prisma.StringNullableWithAggregatesFilter<"AlertSubscription"> | string | null
-  isActive?: Prisma.BoolWithAggregatesFilter<"AlertSubscription"> | boolean
-  lastCheckedAt?: Prisma.DateTimeWithAggregatesFilter<"AlertSubscription"> | Date | string
-  createdAt?: Prisma.DateTimeWithAggregatesFilter<"AlertSubscription"> | Date | string
+  last_checked_at?: Prisma.DateTimeNullableWithAggregatesFilter<"AlertSubscription"> | Date | string | null
+  created_at?: Prisma.DateTimeWithAggregatesFilter<"AlertSubscription"> | Date | string
   query?: Prisma.StringWithAggregatesFilter<"AlertSubscription"> | string
   budget?: Prisma.FloatNullableWithAggregatesFilter<"AlertSubscription"> | number | null
+  is_active?: Prisma.BoolWithAggregatesFilter<"AlertSubscription"> | boolean
 }
 
 export type AlertSubscriptionCreateInput = {
   id?: string
   email?: string | null
   phone?: string | null
-  isActive?: boolean
-  lastCheckedAt?: Date | string
-  createdAt?: Date | string
+  last_checked_at?: Date | string | null
+  created_at?: Date | string
   query: string
   budget?: number | null
-  seenItems?: Prisma.SeenItemCreateNestedManyWithoutSubscriptionInput
+  is_active?: boolean
+  seen_items?: Prisma.SeenItemCreateNestedManyWithoutAlert_subscriptionsInput
 }
 
 export type AlertSubscriptionUncheckedCreateInput = {
   id?: string
   email?: string | null
   phone?: string | null
-  isActive?: boolean
-  lastCheckedAt?: Date | string
-  createdAt?: Date | string
+  last_checked_at?: Date | string | null
+  created_at?: Date | string
   query: string
   budget?: number | null
-  seenItems?: Prisma.SeenItemUncheckedCreateNestedManyWithoutSubscriptionInput
+  is_active?: boolean
+  seen_items?: Prisma.SeenItemUncheckedCreateNestedManyWithoutAlert_subscriptionsInput
 }
 
 export type AlertSubscriptionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  lastCheckedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  last_checked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   query?: Prisma.StringFieldUpdateOperationsInput | string
   budget?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  seenItems?: Prisma.SeenItemUpdateManyWithoutSubscriptionNestedInput
+  is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seen_items?: Prisma.SeenItemUpdateManyWithoutAlert_subscriptionsNestedInput
 }
 
 export type AlertSubscriptionUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  lastCheckedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  last_checked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   query?: Prisma.StringFieldUpdateOperationsInput | string
   budget?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  seenItems?: Prisma.SeenItemUncheckedUpdateManyWithoutSubscriptionNestedInput
+  is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seen_items?: Prisma.SeenItemUncheckedUpdateManyWithoutAlert_subscriptionsNestedInput
 }
 
 export type AlertSubscriptionCreateManyInput = {
   id?: string
   email?: string | null
   phone?: string | null
-  isActive?: boolean
-  lastCheckedAt?: Date | string
-  createdAt?: Date | string
+  last_checked_at?: Date | string | null
+  created_at?: Date | string
   query: string
   budget?: number | null
+  is_active?: boolean
 }
 
 export type AlertSubscriptionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  lastCheckedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  last_checked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   query?: Prisma.StringFieldUpdateOperationsInput | string
   budget?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type AlertSubscriptionUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  lastCheckedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  last_checked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   query?: Prisma.StringFieldUpdateOperationsInput | string
   budget?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type AlertSubscriptionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
-  isActive?: Prisma.SortOrder
-  lastCheckedAt?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  last_checked_at?: Prisma.SortOrder
+  created_at?: Prisma.SortOrder
   query?: Prisma.SortOrder
   budget?: Prisma.SortOrder
+  is_active?: Prisma.SortOrder
 }
 
 export type AlertSubscriptionAvgOrderByAggregateInput = {
@@ -400,22 +400,22 @@ export type AlertSubscriptionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
-  isActive?: Prisma.SortOrder
-  lastCheckedAt?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  last_checked_at?: Prisma.SortOrder
+  created_at?: Prisma.SortOrder
   query?: Prisma.SortOrder
   budget?: Prisma.SortOrder
+  is_active?: Prisma.SortOrder
 }
 
 export type AlertSubscriptionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
-  isActive?: Prisma.SortOrder
-  lastCheckedAt?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  last_checked_at?: Prisma.SortOrder
+  created_at?: Prisma.SortOrder
   query?: Prisma.SortOrder
   budget?: Prisma.SortOrder
+  is_active?: Prisma.SortOrder
 }
 
 export type AlertSubscriptionSumOrderByAggregateInput = {
@@ -427,82 +427,86 @@ export type AlertSubscriptionScalarRelationFilter = {
   isNot?: Prisma.AlertSubscriptionWhereInput
 }
 
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
-export type AlertSubscriptionCreateNestedOneWithoutSeenItemsInput = {
-  create?: Prisma.XOR<Prisma.AlertSubscriptionCreateWithoutSeenItemsInput, Prisma.AlertSubscriptionUncheckedCreateWithoutSeenItemsInput>
-  connectOrCreate?: Prisma.AlertSubscriptionCreateOrConnectWithoutSeenItemsInput
+export type AlertSubscriptionCreateNestedOneWithoutSeen_itemsInput = {
+  create?: Prisma.XOR<Prisma.AlertSubscriptionCreateWithoutSeen_itemsInput, Prisma.AlertSubscriptionUncheckedCreateWithoutSeen_itemsInput>
+  connectOrCreate?: Prisma.AlertSubscriptionCreateOrConnectWithoutSeen_itemsInput
   connect?: Prisma.AlertSubscriptionWhereUniqueInput
 }
 
-export type AlertSubscriptionUpdateOneRequiredWithoutSeenItemsNestedInput = {
-  create?: Prisma.XOR<Prisma.AlertSubscriptionCreateWithoutSeenItemsInput, Prisma.AlertSubscriptionUncheckedCreateWithoutSeenItemsInput>
-  connectOrCreate?: Prisma.AlertSubscriptionCreateOrConnectWithoutSeenItemsInput
-  upsert?: Prisma.AlertSubscriptionUpsertWithoutSeenItemsInput
+export type AlertSubscriptionUpdateOneRequiredWithoutSeen_itemsNestedInput = {
+  create?: Prisma.XOR<Prisma.AlertSubscriptionCreateWithoutSeen_itemsInput, Prisma.AlertSubscriptionUncheckedCreateWithoutSeen_itemsInput>
+  connectOrCreate?: Prisma.AlertSubscriptionCreateOrConnectWithoutSeen_itemsInput
+  upsert?: Prisma.AlertSubscriptionUpsertWithoutSeen_itemsInput
   connect?: Prisma.AlertSubscriptionWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.AlertSubscriptionUpdateToOneWithWhereWithoutSeenItemsInput, Prisma.AlertSubscriptionUpdateWithoutSeenItemsInput>, Prisma.AlertSubscriptionUncheckedUpdateWithoutSeenItemsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AlertSubscriptionUpdateToOneWithWhereWithoutSeen_itemsInput, Prisma.AlertSubscriptionUpdateWithoutSeen_itemsInput>, Prisma.AlertSubscriptionUncheckedUpdateWithoutSeen_itemsInput>
 }
 
-export type AlertSubscriptionCreateWithoutSeenItemsInput = {
+export type AlertSubscriptionCreateWithoutSeen_itemsInput = {
   id?: string
   email?: string | null
   phone?: string | null
-  isActive?: boolean
-  lastCheckedAt?: Date | string
-  createdAt?: Date | string
+  last_checked_at?: Date | string | null
+  created_at?: Date | string
   query: string
   budget?: number | null
+  is_active?: boolean
 }
 
-export type AlertSubscriptionUncheckedCreateWithoutSeenItemsInput = {
+export type AlertSubscriptionUncheckedCreateWithoutSeen_itemsInput = {
   id?: string
   email?: string | null
   phone?: string | null
-  isActive?: boolean
-  lastCheckedAt?: Date | string
-  createdAt?: Date | string
+  last_checked_at?: Date | string | null
+  created_at?: Date | string
   query: string
   budget?: number | null
+  is_active?: boolean
 }
 
-export type AlertSubscriptionCreateOrConnectWithoutSeenItemsInput = {
+export type AlertSubscriptionCreateOrConnectWithoutSeen_itemsInput = {
   where: Prisma.AlertSubscriptionWhereUniqueInput
-  create: Prisma.XOR<Prisma.AlertSubscriptionCreateWithoutSeenItemsInput, Prisma.AlertSubscriptionUncheckedCreateWithoutSeenItemsInput>
+  create: Prisma.XOR<Prisma.AlertSubscriptionCreateWithoutSeen_itemsInput, Prisma.AlertSubscriptionUncheckedCreateWithoutSeen_itemsInput>
 }
 
-export type AlertSubscriptionUpsertWithoutSeenItemsInput = {
-  update: Prisma.XOR<Prisma.AlertSubscriptionUpdateWithoutSeenItemsInput, Prisma.AlertSubscriptionUncheckedUpdateWithoutSeenItemsInput>
-  create: Prisma.XOR<Prisma.AlertSubscriptionCreateWithoutSeenItemsInput, Prisma.AlertSubscriptionUncheckedCreateWithoutSeenItemsInput>
+export type AlertSubscriptionUpsertWithoutSeen_itemsInput = {
+  update: Prisma.XOR<Prisma.AlertSubscriptionUpdateWithoutSeen_itemsInput, Prisma.AlertSubscriptionUncheckedUpdateWithoutSeen_itemsInput>
+  create: Prisma.XOR<Prisma.AlertSubscriptionCreateWithoutSeen_itemsInput, Prisma.AlertSubscriptionUncheckedCreateWithoutSeen_itemsInput>
   where?: Prisma.AlertSubscriptionWhereInput
 }
 
-export type AlertSubscriptionUpdateToOneWithWhereWithoutSeenItemsInput = {
+export type AlertSubscriptionUpdateToOneWithWhereWithoutSeen_itemsInput = {
   where?: Prisma.AlertSubscriptionWhereInput
-  data: Prisma.XOR<Prisma.AlertSubscriptionUpdateWithoutSeenItemsInput, Prisma.AlertSubscriptionUncheckedUpdateWithoutSeenItemsInput>
+  data: Prisma.XOR<Prisma.AlertSubscriptionUpdateWithoutSeen_itemsInput, Prisma.AlertSubscriptionUncheckedUpdateWithoutSeen_itemsInput>
 }
 
-export type AlertSubscriptionUpdateWithoutSeenItemsInput = {
+export type AlertSubscriptionUpdateWithoutSeen_itemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  lastCheckedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  last_checked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   query?: Prisma.StringFieldUpdateOperationsInput | string
   budget?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
-export type AlertSubscriptionUncheckedUpdateWithoutSeenItemsInput = {
+export type AlertSubscriptionUncheckedUpdateWithoutSeen_itemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  lastCheckedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  last_checked_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   query?: Prisma.StringFieldUpdateOperationsInput | string
   budget?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 
@@ -511,11 +515,11 @@ export type AlertSubscriptionUncheckedUpdateWithoutSeenItemsInput = {
  */
 
 export type AlertSubscriptionCountOutputType = {
-  seenItems: number
+  seen_items: number
 }
 
 export type AlertSubscriptionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  seenItems?: boolean | AlertSubscriptionCountOutputTypeCountSeenItemsArgs
+  seen_items?: boolean | AlertSubscriptionCountOutputTypeCountSeen_itemsArgs
 }
 
 /**
@@ -531,7 +535,7 @@ export type AlertSubscriptionCountOutputTypeDefaultArgs<ExtArgs extends runtime.
 /**
  * AlertSubscriptionCountOutputType without action
  */
-export type AlertSubscriptionCountOutputTypeCountSeenItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type AlertSubscriptionCountOutputTypeCountSeen_itemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.SeenItemWhereInput
 }
 
@@ -540,12 +544,12 @@ export type AlertSubscriptionSelect<ExtArgs extends runtime.Types.Extensions.Int
   id?: boolean
   email?: boolean
   phone?: boolean
-  isActive?: boolean
-  lastCheckedAt?: boolean
-  createdAt?: boolean
+  last_checked_at?: boolean
+  created_at?: boolean
   query?: boolean
   budget?: boolean
-  seenItems?: boolean | Prisma.AlertSubscription$seenItemsArgs<ExtArgs>
+  is_active?: boolean
+  seen_items?: boolean | Prisma.AlertSubscription$seen_itemsArgs<ExtArgs>
   _count?: boolean | Prisma.AlertSubscriptionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["alertSubscription"]>
 
@@ -553,38 +557,38 @@ export type AlertSubscriptionSelectCreateManyAndReturn<ExtArgs extends runtime.T
   id?: boolean
   email?: boolean
   phone?: boolean
-  isActive?: boolean
-  lastCheckedAt?: boolean
-  createdAt?: boolean
+  last_checked_at?: boolean
+  created_at?: boolean
   query?: boolean
   budget?: boolean
+  is_active?: boolean
 }, ExtArgs["result"]["alertSubscription"]>
 
 export type AlertSubscriptionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   email?: boolean
   phone?: boolean
-  isActive?: boolean
-  lastCheckedAt?: boolean
-  createdAt?: boolean
+  last_checked_at?: boolean
+  created_at?: boolean
   query?: boolean
   budget?: boolean
+  is_active?: boolean
 }, ExtArgs["result"]["alertSubscription"]>
 
 export type AlertSubscriptionSelectScalar = {
   id?: boolean
   email?: boolean
   phone?: boolean
-  isActive?: boolean
-  lastCheckedAt?: boolean
-  createdAt?: boolean
+  last_checked_at?: boolean
+  created_at?: boolean
   query?: boolean
   budget?: boolean
+  is_active?: boolean
 }
 
-export type AlertSubscriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "phone" | "isActive" | "lastCheckedAt" | "createdAt" | "query" | "budget", ExtArgs["result"]["alertSubscription"]>
+export type AlertSubscriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "phone" | "last_checked_at" | "created_at" | "query" | "budget" | "is_active", ExtArgs["result"]["alertSubscription"]>
 export type AlertSubscriptionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  seenItems?: boolean | Prisma.AlertSubscription$seenItemsArgs<ExtArgs>
+  seen_items?: boolean | Prisma.AlertSubscription$seen_itemsArgs<ExtArgs>
   _count?: boolean | Prisma.AlertSubscriptionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AlertSubscriptionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -593,17 +597,17 @@ export type AlertSubscriptionIncludeUpdateManyAndReturn<ExtArgs extends runtime.
 export type $AlertSubscriptionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "AlertSubscription"
   objects: {
-    seenItems: Prisma.$SeenItemPayload<ExtArgs>[]
+    seen_items: Prisma.$SeenItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     email: string | null
     phone: string | null
-    isActive: boolean
-    lastCheckedAt: Date
-    createdAt: Date
+    last_checked_at: Date | null
+    created_at: Date
     query: string
     budget: number | null
+    is_active: boolean
   }, ExtArgs["result"]["alertSubscription"]>
   composites: {}
 }
@@ -998,7 +1002,7 @@ readonly fields: AlertSubscriptionFieldRefs;
  */
 export interface Prisma__AlertSubscriptionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  seenItems<T extends Prisma.AlertSubscription$seenItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AlertSubscription$seenItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SeenItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  seen_items<T extends Prisma.AlertSubscription$seen_itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AlertSubscription$seen_itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SeenItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1031,11 +1035,11 @@ export interface AlertSubscriptionFieldRefs {
   readonly id: Prisma.FieldRef<"AlertSubscription", 'String'>
   readonly email: Prisma.FieldRef<"AlertSubscription", 'String'>
   readonly phone: Prisma.FieldRef<"AlertSubscription", 'String'>
-  readonly isActive: Prisma.FieldRef<"AlertSubscription", 'Boolean'>
-  readonly lastCheckedAt: Prisma.FieldRef<"AlertSubscription", 'DateTime'>
-  readonly createdAt: Prisma.FieldRef<"AlertSubscription", 'DateTime'>
+  readonly last_checked_at: Prisma.FieldRef<"AlertSubscription", 'DateTime'>
+  readonly created_at: Prisma.FieldRef<"AlertSubscription", 'DateTime'>
   readonly query: Prisma.FieldRef<"AlertSubscription", 'String'>
   readonly budget: Prisma.FieldRef<"AlertSubscription", 'Float'>
+  readonly is_active: Prisma.FieldRef<"AlertSubscription", 'Boolean'>
 }
     
 
@@ -1424,9 +1428,9 @@ export type AlertSubscriptionDeleteManyArgs<ExtArgs extends runtime.Types.Extens
 }
 
 /**
- * AlertSubscription.seenItems
+ * AlertSubscription.seen_items
  */
-export type AlertSubscription$seenItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type AlertSubscription$seen_itemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the SeenItem
    */

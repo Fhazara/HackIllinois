@@ -88,11 +88,11 @@ export const SearchRequestScalarFieldEnum = {
   title: 'title',
   description: 'description',
   budget: 'budget',
-  imageUrl: 'imageUrl',
   status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  userId: 'userId'
+  userId: 'userId',
+  imageUrl: 'imageUrl'
 } as const
 
 export type SearchRequestScalarFieldEnum = (typeof SearchRequestScalarFieldEnum)[keyof typeof SearchRequestScalarFieldEnum]
@@ -117,11 +117,11 @@ export const AlertSubscriptionScalarFieldEnum = {
   id: 'id',
   email: 'email',
   phone: 'phone',
-  isActive: 'isActive',
-  lastCheckedAt: 'lastCheckedAt',
-  createdAt: 'createdAt',
+  last_checked_at: 'last_checked_at',
+  created_at: 'created_at',
   query: 'query',
-  budget: 'budget'
+  budget: 'budget',
+  is_active: 'is_active'
 } as const
 
 export type AlertSubscriptionScalarFieldEnum = (typeof AlertSubscriptionScalarFieldEnum)[keyof typeof AlertSubscriptionScalarFieldEnum]
@@ -130,8 +130,8 @@ export type AlertSubscriptionScalarFieldEnum = (typeof AlertSubscriptionScalarFi
 export const SeenItemScalarFieldEnum = {
   id: 'id',
   url: 'url',
-  createdAt: 'createdAt',
-  subscriptionId: 'subscriptionId'
+  created_at: 'created_at',
+  subscription_id: 'subscription_id'
 } as const
 
 export type SeenItemScalarFieldEnum = (typeof SeenItemScalarFieldEnum)[keyof typeof SeenItemScalarFieldEnum]

@@ -2,75 +2,78 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { exec } from "child_process";
 import { promisify } from "util";
+import Mailjet from "node-mailjet";
+
+const mailjet = new Mailjet({
+    apiKey: "b17aecb4ee1ad7d4f66a13c1a79e2ba0",
+    apiSecret: "4f9c07825df8de5b11ceb0af1d5b4b55"
+});
 
 const execAsync = promisify(exec);
 
-// Vercel Cron or Modal Cron entrypoint
 export async function GET() {
     try {
         console.log("CRON: Starting 15-minute alert check...");
 
         const activeAlerts = await prisma.alertSubscription.findMany({
-            where: { isActive: true },
-            include: { seenItems: true }
+            where: { is_active: true },
+            include: { seen_items: true }
         });
 
         console.log(`CRON: Found ${activeAlerts.length} active subscriptions.`);
 
-        for (const alert of activeAlerts) {
+        await Promise.all(activeAlerts.map(async (alert) => {
             console.log(`CRON: Checking new items for query "${alert.query}"`);
 
-            // Execute the scraper
-            const command = `docker exec thrift-product-agent python3 /home/node/.openclaw/workspace/skills/product-search/search.py --query "${alert.query.replace(/"/g, '\\"')}"` +
+            const command = `docker exec thrift-product-agent python3 /home/node/.openclaw/workspace/skills/product-search/search.py --query "${alert.query.replace(/"/g, '\\"')}" --sort-new` +
                 (alert.budget ? ` --budget ${alert.budget}` : "");
 
-            const { stdout } = await execAsync(command);
-
-            // The scraper script might output some logs from OpenClaw via print(),
-            // so we look for the last valid JSON object line.
-            let parsedData;
             try {
-                const outputStr = stdout.trim();
-                const lines = outputStr.split("\n");
-                // The expected output will be a JSON log starting with { "results": [...] }
-                const jsonLine = lines.find((line) => line.startsWith("{"));
-                parsedData = jsonLine ? JSON.parse(jsonLine) : {};
-            } catch (e) {
-                console.error("Failed to parse docker stdout in Cron:", e);
-                parsedData = {};
-            }
+                const { stdout, stderr } = await execAsync(command, { maxBuffer: 1024 * 1024 * 10 });
 
-            const results = parsedData.results || [];
+                let parsedData;
+                try {
+                    const startIndex = stdout.indexOf("{");
+                    const endIndex = stdout.lastIndexOf("}");
+                    if (startIndex !== -1 && endIndex !== -1) {
+                        const jsonStr = stdout.substring(startIndex, endIndex + 1);
+                        parsedData = JSON.parse(jsonStr);
+                    } else {
+                        parsedData = {};
+                    }
+                } catch (e) {
+                    console.error("Failed to parse docker stdout in Cron:", e);
+                    parsedData = {};
+                }
 
-            // Isolate new items
-            const seenUrls = new Set(alert.seenItems.map((s) => s.url));
-            const newItems = results.filter((item: any) => item.url && !seenUrls.has(item.url));
+                const results = parsedData.results || [];
 
-            if (newItems.length > 0) {
-                console.log(`CRON: Found ${newItems.length} new items for alert ${alert.id}!`);
+                const seenUrls = new Set(alert.seen_items.map((s: any) => s.url));
+                const newItems = results.filter((item: any) => item.url && !seenUrls.has(item.url));
 
-                // 1. Save these items so we don't alert on them again
-                await prisma.seenItem.createMany({
-                    data: newItems.map((idx: any) => ({
-                        url: idx.url,
-                        subscriptionId: alert.id
-                    })),
-                    skipDuplicates: true
-                });
+                if (newItems.length > 0) {
+                    console.log(`CRON: Found ${newItems.length} new items!`);
 
-                // 2. Draft the Message
-                const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-                const unsubscribeUrl = `${appUrl}/alerts/unsubscribe?id=${alert.id}`;
-                const resultsUrl = `${appUrl}/results?q=${encodeURIComponent(alert.query)}`;
+                    await prisma.seenItem.createMany({
+                        data: newItems.map((idx: any) => ({
+                            url: idx.url,
+                            subscription_id: alert.id
+                        })),
+                        skipDuplicates: true
+                    });
 
-                const emailTitle = `We found ${newItems.length} new thrift finds for "${alert.query}"!`;
-                let topFinds = newItems.slice(0, 3).map((n: any) => `- ${n.name} ($${n.price}): ${n.url}`).join("\n");
+                    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+                    const unsubscribeUrl = `${appUrl}/alerts/unsubscribe?id=${alert.id}`;
+                    const resultsUrl = `${appUrl}/results?q=${encodeURIComponent(alert.query)}`;
 
-                const emailBody = `
+                    const emailTitle = `We found ${newItems.length} new thrift finds for "${alert.query}"!`;
+                    let topFinds = newItems.slice(0, 3).map((n: any) => `- ${n.name} ($${n.price}): ${n.url}`).join("\n");
+
+                    const emailBody = `
 ========================================
 NEW ALERTS FROM THRIFT!
 ========================================
-We've been keeping an eye out, and we found ${newItems.length} new listings matching your search: "${alert.query}". 
+We found ${newItems.length} new listings matching your search: "${alert.query}". 
 Prices hover around $${alert.budget || "Any"}.
 
 Top Finds:
@@ -80,34 +83,60 @@ View all your matching listings instantly:
 ${resultsUrl}
 
 ----------------------------------------
-To stop receiving these alerts, simply click here:
+To stop receiving these alerts, click here:
 ${unsubscribeUrl}
 ========================================
 `;
 
-                const smsBody = `[THRIFT ALERT] We found ${newItems.length} new finds for "${alert.query}"! View them here: ${resultsUrl} | Reply STOP to unsubscribe.`;
+                    const smsBody = `[THRIFT ALERT] ${newItems.length} new finds for "${alert.query}"! View here: ${resultsUrl} | Reply STOP to unsubscribe.`;
 
-                // 3. Dispatch the Notifications (using Mock Console.log as approved)
-                if (alert.email) {
-                    console.log(`Mock Email sent to: ${alert.email}\nSubject: ${emailTitle}\nBody: ${emailBody}`);
-                }
-                if (alert.phone) {
-                    console.log(`Mock SMS sent to: ${alert.phone}\nMessage: ${smsBody}`);
-                }
+                    console.log(`\n=== MOCK EMAIL FALLBACK TO TERMINAL ===\n${emailBody}\n=======================================\n`);
 
-                // Keep Last Checked updated
-                await prisma.alertSubscription.update({
-                    where: { id: alert.id },
-                    data: { lastCheckedAt: new Date() }
-                })
-            } else {
-                console.log(`CRON: No new items found for "${alert.query}".`);
+                    if (alert.email) {
+                        try {
+                            console.log(`Sending Mailjet email to: ${alert.email}...`);
+                            await mailjet.post("send", { version: "v3.1" }).request({
+                                Messages: [
+                                    {
+                                        From: {
+                                            Email: process.env.MAILJET_SENDER_EMAIL || "thrift.ai.alerts@gmail.com",
+                                            Name: "Thrift AI Alerts",
+                                        },
+                                        To: [
+                                            {
+                                                Email: alert.email,
+                                                Name: alert.email.split("@")[0],
+                                            },
+                                        ],
+                                        Subject: emailTitle,
+                                        TextPart: emailBody,
+                                    },
+                                ],
+                            });
+                            console.log(`✅ Mailjet email successfully sent to ${alert.email}!`);
+                        } catch (err: any) {
+                            console.error("❌ Mailjet failed:", err.statusCode, err.response?.data || err.message);
+                            console.log("If 401/403: Ensure your sender email is verified in the Mailjet dashboard.");
+                        }
+                    }
+
+                    if (alert.phone) console.log(`Mock SMS sent to: ${alert.phone}\nMessage: ${smsBody}`);
+
+                    await prisma.alertSubscription.update({
+                        where: { id: alert.id },
+                        data: { last_checked_at: new Date() }
+                    });
+                } else {
+                    console.log(`CRON: No new items found for "${alert.query}".`);
+                }
+            } catch (err) {
+                console.error(`CRON: Docker exec failed for query "${alert.query}":`, err);
             }
-        }
+        }));
 
         return NextResponse.json({ success: true, processed: activeAlerts.length });
-    } catch (e) {
+    } catch (e: any) {
         console.error("CRON failed:", e);
-        return NextResponse.json({ error: "Cron run failed" }, { status: 500 });
+        return NextResponse.json({ error: "Cron run failed", details: e.toString(), stack: e.stack }, { status: 500 });
     }
 }

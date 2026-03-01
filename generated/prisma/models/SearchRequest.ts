@@ -39,11 +39,11 @@ export type SearchRequestMinAggregateOutputType = {
   title: string | null
   description: string | null
   budget: number | null
-  imageUrl: string | null
   status: $Enums.SearchRequestStatus | null
   createdAt: Date | null
   updatedAt: Date | null
   userId: string | null
+  imageUrl: string | null
 }
 
 export type SearchRequestMaxAggregateOutputType = {
@@ -51,11 +51,11 @@ export type SearchRequestMaxAggregateOutputType = {
   title: string | null
   description: string | null
   budget: number | null
-  imageUrl: string | null
   status: $Enums.SearchRequestStatus | null
   createdAt: Date | null
   updatedAt: Date | null
   userId: string | null
+  imageUrl: string | null
 }
 
 export type SearchRequestCountAggregateOutputType = {
@@ -63,11 +63,11 @@ export type SearchRequestCountAggregateOutputType = {
   title: number
   description: number
   budget: number
-  imageUrl: number
   status: number
   createdAt: number
   updatedAt: number
   userId: number
+  imageUrl: number
   _all: number
 }
 
@@ -85,11 +85,11 @@ export type SearchRequestMinAggregateInputType = {
   title?: true
   description?: true
   budget?: true
-  imageUrl?: true
   status?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
+  imageUrl?: true
 }
 
 export type SearchRequestMaxAggregateInputType = {
@@ -97,11 +97,11 @@ export type SearchRequestMaxAggregateInputType = {
   title?: true
   description?: true
   budget?: true
-  imageUrl?: true
   status?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
+  imageUrl?: true
 }
 
 export type SearchRequestCountAggregateInputType = {
@@ -109,11 +109,11 @@ export type SearchRequestCountAggregateInputType = {
   title?: true
   description?: true
   budget?: true
-  imageUrl?: true
   status?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
+  imageUrl?: true
   _all?: true
 }
 
@@ -208,11 +208,11 @@ export type SearchRequestGroupByOutputType = {
   title: string
   description: string
   budget: number | null
-  imageUrl: string | null
   status: $Enums.SearchRequestStatus
   createdAt: Date
   updatedAt: Date
   userId: string
+  imageUrl: string | null
   _count: SearchRequestCountAggregateOutputType | null
   _avg: SearchRequestAvgAggregateOutputType | null
   _sum: SearchRequestSumAggregateOutputType | null
@@ -243,13 +243,13 @@ export type SearchRequestWhereInput = {
   title?: Prisma.StringFilter<"SearchRequest"> | string
   description?: Prisma.StringFilter<"SearchRequest"> | string
   budget?: Prisma.FloatNullableFilter<"SearchRequest"> | number | null
-  imageUrl?: Prisma.StringNullableFilter<"SearchRequest"> | string | null
   status?: Prisma.EnumSearchRequestStatusFilter<"SearchRequest"> | $Enums.SearchRequestStatus
   createdAt?: Prisma.DateTimeFilter<"SearchRequest"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SearchRequest"> | Date | string
   userId?: Prisma.StringFilter<"SearchRequest"> | string
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  imageUrl?: Prisma.StringNullableFilter<"SearchRequest"> | string | null
   results?: Prisma.ProductResultListRelationFilter
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type SearchRequestOrderByWithRelationInput = {
@@ -257,13 +257,13 @@ export type SearchRequestOrderByWithRelationInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   budget?: Prisma.SortOrderInput | Prisma.SortOrder
-  imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  user?: Prisma.UserOrderByWithRelationInput
+  imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   results?: Prisma.ProductResultOrderByRelationAggregateInput
+  user?: Prisma.UserOrderByWithRelationInput
 }
 
 export type SearchRequestWhereUniqueInput = Prisma.AtLeast<{
@@ -274,13 +274,13 @@ export type SearchRequestWhereUniqueInput = Prisma.AtLeast<{
   title?: Prisma.StringFilter<"SearchRequest"> | string
   description?: Prisma.StringFilter<"SearchRequest"> | string
   budget?: Prisma.FloatNullableFilter<"SearchRequest"> | number | null
-  imageUrl?: Prisma.StringNullableFilter<"SearchRequest"> | string | null
   status?: Prisma.EnumSearchRequestStatusFilter<"SearchRequest"> | $Enums.SearchRequestStatus
   createdAt?: Prisma.DateTimeFilter<"SearchRequest"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SearchRequest"> | Date | string
   userId?: Prisma.StringFilter<"SearchRequest"> | string
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  imageUrl?: Prisma.StringNullableFilter<"SearchRequest"> | string | null
   results?: Prisma.ProductResultListRelationFilter
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
 export type SearchRequestOrderByWithAggregationInput = {
@@ -288,11 +288,11 @@ export type SearchRequestOrderByWithAggregationInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   budget?: Prisma.SortOrderInput | Prisma.SortOrder
-  imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.SearchRequestCountOrderByAggregateInput
   _avg?: Prisma.SearchRequestAvgOrderByAggregateInput
   _max?: Prisma.SearchRequestMaxOrderByAggregateInput
@@ -308,11 +308,11 @@ export type SearchRequestScalarWhereWithAggregatesInput = {
   title?: Prisma.StringWithAggregatesFilter<"SearchRequest"> | string
   description?: Prisma.StringWithAggregatesFilter<"SearchRequest"> | string
   budget?: Prisma.FloatNullableWithAggregatesFilter<"SearchRequest"> | number | null
-  imageUrl?: Prisma.StringNullableWithAggregatesFilter<"SearchRequest"> | string | null
   status?: Prisma.EnumSearchRequestStatusWithAggregatesFilter<"SearchRequest"> | $Enums.SearchRequestStatus
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"SearchRequest"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"SearchRequest"> | Date | string
   userId?: Prisma.StringWithAggregatesFilter<"SearchRequest"> | string
+  imageUrl?: Prisma.StringNullableWithAggregatesFilter<"SearchRequest"> | string | null
 }
 
 export type SearchRequestCreateInput = {
@@ -320,12 +320,12 @@ export type SearchRequestCreateInput = {
   title: string
   description: string
   budget?: number | null
-  imageUrl?: string | null
   status?: $Enums.SearchRequestStatus
   createdAt?: Date | string
   updatedAt?: Date | string
-  user: Prisma.UserCreateNestedOneWithoutSearchRequestsInput
+  imageUrl?: string | null
   results?: Prisma.ProductResultCreateNestedManyWithoutSearchRequestInput
+  user: Prisma.UserCreateNestedOneWithoutSearchRequestsInput
 }
 
 export type SearchRequestUncheckedCreateInput = {
@@ -333,11 +333,11 @@ export type SearchRequestUncheckedCreateInput = {
   title: string
   description: string
   budget?: number | null
-  imageUrl?: string | null
   status?: $Enums.SearchRequestStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
+  imageUrl?: string | null
   results?: Prisma.ProductResultUncheckedCreateNestedManyWithoutSearchRequestInput
 }
 
@@ -346,12 +346,12 @@ export type SearchRequestUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   budget?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumSearchRequestStatusFieldUpdateOperationsInput | $Enums.SearchRequestStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutSearchRequestsNestedInput
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   results?: Prisma.ProductResultUpdateManyWithoutSearchRequestNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutSearchRequestsNestedInput
 }
 
 export type SearchRequestUncheckedUpdateInput = {
@@ -359,11 +359,11 @@ export type SearchRequestUncheckedUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   budget?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumSearchRequestStatusFieldUpdateOperationsInput | $Enums.SearchRequestStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   results?: Prisma.ProductResultUncheckedUpdateManyWithoutSearchRequestNestedInput
 }
 
@@ -372,11 +372,11 @@ export type SearchRequestCreateManyInput = {
   title: string
   description: string
   budget?: number | null
-  imageUrl?: string | null
   status?: $Enums.SearchRequestStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
+  imageUrl?: string | null
 }
 
 export type SearchRequestUpdateManyMutationInput = {
@@ -384,10 +384,10 @@ export type SearchRequestUpdateManyMutationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   budget?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumSearchRequestStatusFieldUpdateOperationsInput | $Enums.SearchRequestStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type SearchRequestUncheckedUpdateManyInput = {
@@ -395,11 +395,11 @@ export type SearchRequestUncheckedUpdateManyInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   budget?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumSearchRequestStatusFieldUpdateOperationsInput | $Enums.SearchRequestStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type SearchRequestListRelationFilter = {
@@ -417,11 +417,11 @@ export type SearchRequestCountOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   budget?: Prisma.SortOrder
-  imageUrl?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrder
 }
 
 export type SearchRequestAvgOrderByAggregateInput = {
@@ -433,11 +433,11 @@ export type SearchRequestMaxOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   budget?: Prisma.SortOrder
-  imageUrl?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrder
 }
 
 export type SearchRequestMinOrderByAggregateInput = {
@@ -445,11 +445,11 @@ export type SearchRequestMinOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   budget?: Prisma.SortOrder
-  imageUrl?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrder
 }
 
 export type SearchRequestSumOrderByAggregateInput = {
@@ -534,10 +534,10 @@ export type SearchRequestCreateWithoutUserInput = {
   title: string
   description: string
   budget?: number | null
-  imageUrl?: string | null
   status?: $Enums.SearchRequestStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  imageUrl?: string | null
   results?: Prisma.ProductResultCreateNestedManyWithoutSearchRequestInput
 }
 
@@ -546,10 +546,10 @@ export type SearchRequestUncheckedCreateWithoutUserInput = {
   title: string
   description: string
   budget?: number | null
-  imageUrl?: string | null
   status?: $Enums.SearchRequestStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  imageUrl?: string | null
   results?: Prisma.ProductResultUncheckedCreateNestedManyWithoutSearchRequestInput
 }
 
@@ -587,11 +587,11 @@ export type SearchRequestScalarWhereInput = {
   title?: Prisma.StringFilter<"SearchRequest"> | string
   description?: Prisma.StringFilter<"SearchRequest"> | string
   budget?: Prisma.FloatNullableFilter<"SearchRequest"> | number | null
-  imageUrl?: Prisma.StringNullableFilter<"SearchRequest"> | string | null
   status?: Prisma.EnumSearchRequestStatusFilter<"SearchRequest"> | $Enums.SearchRequestStatus
   createdAt?: Prisma.DateTimeFilter<"SearchRequest"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SearchRequest"> | Date | string
   userId?: Prisma.StringFilter<"SearchRequest"> | string
+  imageUrl?: Prisma.StringNullableFilter<"SearchRequest"> | string | null
 }
 
 export type SearchRequestCreateWithoutResultsInput = {
@@ -599,10 +599,10 @@ export type SearchRequestCreateWithoutResultsInput = {
   title: string
   description: string
   budget?: number | null
-  imageUrl?: string | null
   status?: $Enums.SearchRequestStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  imageUrl?: string | null
   user: Prisma.UserCreateNestedOneWithoutSearchRequestsInput
 }
 
@@ -611,11 +611,11 @@ export type SearchRequestUncheckedCreateWithoutResultsInput = {
   title: string
   description: string
   budget?: number | null
-  imageUrl?: string | null
   status?: $Enums.SearchRequestStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
+  imageUrl?: string | null
 }
 
 export type SearchRequestCreateOrConnectWithoutResultsInput = {
@@ -639,10 +639,10 @@ export type SearchRequestUpdateWithoutResultsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   budget?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumSearchRequestStatusFieldUpdateOperationsInput | $Enums.SearchRequestStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutSearchRequestsNestedInput
 }
 
@@ -651,11 +651,11 @@ export type SearchRequestUncheckedUpdateWithoutResultsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   budget?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumSearchRequestStatusFieldUpdateOperationsInput | $Enums.SearchRequestStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type SearchRequestCreateManyUserInput = {
@@ -663,10 +663,10 @@ export type SearchRequestCreateManyUserInput = {
   title: string
   description: string
   budget?: number | null
-  imageUrl?: string | null
   status?: $Enums.SearchRequestStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  imageUrl?: string | null
 }
 
 export type SearchRequestUpdateWithoutUserInput = {
@@ -674,10 +674,10 @@ export type SearchRequestUpdateWithoutUserInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   budget?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumSearchRequestStatusFieldUpdateOperationsInput | $Enums.SearchRequestStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   results?: Prisma.ProductResultUpdateManyWithoutSearchRequestNestedInput
 }
 
@@ -686,10 +686,10 @@ export type SearchRequestUncheckedUpdateWithoutUserInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   budget?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumSearchRequestStatusFieldUpdateOperationsInput | $Enums.SearchRequestStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   results?: Prisma.ProductResultUncheckedUpdateManyWithoutSearchRequestNestedInput
 }
 
@@ -698,10 +698,10 @@ export type SearchRequestUncheckedUpdateManyWithoutUserInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   budget?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumSearchRequestStatusFieldUpdateOperationsInput | $Enums.SearchRequestStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -740,13 +740,13 @@ export type SearchRequestSelect<ExtArgs extends runtime.Types.Extensions.Interna
   title?: boolean
   description?: boolean
   budget?: boolean
-  imageUrl?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  imageUrl?: boolean
   results?: boolean | Prisma.SearchRequest$resultsArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.SearchRequestCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["searchRequest"]>
 
@@ -755,11 +755,11 @@ export type SearchRequestSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   title?: boolean
   description?: boolean
   budget?: boolean
-  imageUrl?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
+  imageUrl?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["searchRequest"]>
 
@@ -768,11 +768,11 @@ export type SearchRequestSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   title?: boolean
   description?: boolean
   budget?: boolean
-  imageUrl?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
+  imageUrl?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["searchRequest"]>
 
@@ -781,17 +781,17 @@ export type SearchRequestSelectScalar = {
   title?: boolean
   description?: boolean
   budget?: boolean
-  imageUrl?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
+  imageUrl?: boolean
 }
 
-export type SearchRequestOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "budget" | "imageUrl" | "status" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["searchRequest"]>
+export type SearchRequestOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "budget" | "status" | "createdAt" | "updatedAt" | "userId" | "imageUrl", ExtArgs["result"]["searchRequest"]>
 export type SearchRequestInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   results?: boolean | Prisma.SearchRequest$resultsArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.SearchRequestCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type SearchRequestIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -804,19 +804,19 @@ export type SearchRequestIncludeUpdateManyAndReturn<ExtArgs extends runtime.Type
 export type $SearchRequestPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "SearchRequest"
   objects: {
-    user: Prisma.$UserPayload<ExtArgs>
     results: Prisma.$ProductResultPayload<ExtArgs>[]
+    user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     title: string
     description: string
     budget: number | null
-    imageUrl: string | null
     status: $Enums.SearchRequestStatus
     createdAt: Date
     updatedAt: Date
     userId: string
+    imageUrl: string | null
   }, ExtArgs["result"]["searchRequest"]>
   composites: {}
 }
@@ -1211,8 +1211,8 @@ readonly fields: SearchRequestFieldRefs;
  */
 export interface Prisma__SearchRequestClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   results<T extends Prisma.SearchRequest$resultsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SearchRequest$resultsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1246,11 +1246,11 @@ export interface SearchRequestFieldRefs {
   readonly title: Prisma.FieldRef<"SearchRequest", 'String'>
   readonly description: Prisma.FieldRef<"SearchRequest", 'String'>
   readonly budget: Prisma.FieldRef<"SearchRequest", 'Float'>
-  readonly imageUrl: Prisma.FieldRef<"SearchRequest", 'String'>
   readonly status: Prisma.FieldRef<"SearchRequest", 'SearchRequestStatus'>
   readonly createdAt: Prisma.FieldRef<"SearchRequest", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"SearchRequest", 'DateTime'>
   readonly userId: Prisma.FieldRef<"SearchRequest", 'String'>
+  readonly imageUrl: Prisma.FieldRef<"SearchRequest", 'String'>
 }
     
 

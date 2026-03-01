@@ -302,6 +302,8 @@ export default function ResultsPage() {
                             ? "✓ search complete"
                             : "↻ still looking..."}
                     </div>
+
+
                     <div style={{ position: "relative" }}>
                         <button
                             onClick={() => setIsAlertMenuOpen(!isAlertMenuOpen)}

@@ -7,17 +7,10 @@ export async function POST(request: NextRequest) {
         const { email, phone, query, budget } = body;
 
         if (!query) {
-            return NextResponse.json(
-                { error: "Search query is required to create an alert." },
-                { status: 400 },
-            );
+            return NextResponse.json({ error: "Search query is required to create an alert." }, { status: 400 });
         }
-
         if (!email && !phone) {
-            return NextResponse.json(
-                { error: "Must provide either an email or phone number." },
-                { status: 400 },
-            );
+            return NextResponse.json({ error: "Must provide either an email or phone number." }, { status: 400 });
         }
 
         const subscription = await prisma.alertSubscription.create({
@@ -32,9 +25,6 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: true, id: subscription.id });
     } catch (e) {
         console.error("Failed to create alert subscription:", e);
-        return NextResponse.json(
-            { error: "Failed to create subscription" },
-            { status: 500 },
-        );
+        return NextResponse.json({ error: "Failed to create subscription" }, { status: 500 });
     }
 }

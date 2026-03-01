@@ -1,8 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Suspense } from "react";
 
-// Server component to handle unsubscription
 export default async function UnsubscribePage({
     searchParams,
 }: {
@@ -20,13 +18,13 @@ export default async function UnsubscribePage({
             });
 
             if (subscription) {
-                if (!subscription.isActive) {
+                if (!subscription.is_active) {
                     message = "You are already unsubscribed from this alert.";
                     success = true;
                 } else {
                     await prisma.alertSubscription.update({
                         where: { id },
-                        data: { isActive: false },
+                        data: { is_active: false },
                     });
                     message = "You have been successfully unsubscribed from this alert.";
                     success = true;

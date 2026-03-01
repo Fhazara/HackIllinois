@@ -27,22 +27,22 @@ export type AggregateSeenItem = {
 export type SeenItemMinAggregateOutputType = {
   id: string | null
   url: string | null
-  createdAt: Date | null
-  subscriptionId: string | null
+  created_at: Date | null
+  subscription_id: string | null
 }
 
 export type SeenItemMaxAggregateOutputType = {
   id: string | null
   url: string | null
-  createdAt: Date | null
-  subscriptionId: string | null
+  created_at: Date | null
+  subscription_id: string | null
 }
 
 export type SeenItemCountAggregateOutputType = {
   id: number
   url: number
-  createdAt: number
-  subscriptionId: number
+  created_at: number
+  subscription_id: number
   _all: number
 }
 
@@ -50,22 +50,22 @@ export type SeenItemCountAggregateOutputType = {
 export type SeenItemMinAggregateInputType = {
   id?: true
   url?: true
-  createdAt?: true
-  subscriptionId?: true
+  created_at?: true
+  subscription_id?: true
 }
 
 export type SeenItemMaxAggregateInputType = {
   id?: true
   url?: true
-  createdAt?: true
-  subscriptionId?: true
+  created_at?: true
+  subscription_id?: true
 }
 
 export type SeenItemCountAggregateInputType = {
   id?: true
   url?: true
-  createdAt?: true
-  subscriptionId?: true
+  created_at?: true
+  subscription_id?: true
   _all?: true
 }
 
@@ -144,8 +144,8 @@ export type SeenItemGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 export type SeenItemGroupByOutputType = {
   id: string
   url: string
-  createdAt: Date
-  subscriptionId: string
+  created_at: Date
+  subscription_id: string
   _count: SeenItemCountAggregateOutputType | null
   _min: SeenItemMinAggregateOutputType | null
   _max: SeenItemMaxAggregateOutputType | null
@@ -172,36 +172,36 @@ export type SeenItemWhereInput = {
   NOT?: Prisma.SeenItemWhereInput | Prisma.SeenItemWhereInput[]
   id?: Prisma.StringFilter<"SeenItem"> | string
   url?: Prisma.StringFilter<"SeenItem"> | string
-  createdAt?: Prisma.DateTimeFilter<"SeenItem"> | Date | string
-  subscriptionId?: Prisma.StringFilter<"SeenItem"> | string
-  subscription?: Prisma.XOR<Prisma.AlertSubscriptionScalarRelationFilter, Prisma.AlertSubscriptionWhereInput>
+  created_at?: Prisma.DateTimeFilter<"SeenItem"> | Date | string
+  subscription_id?: Prisma.StringFilter<"SeenItem"> | string
+  alert_subscriptions?: Prisma.XOR<Prisma.AlertSubscriptionScalarRelationFilter, Prisma.AlertSubscriptionWhereInput>
 }
 
 export type SeenItemOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   url?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
-  subscriptionId?: Prisma.SortOrder
-  subscription?: Prisma.AlertSubscriptionOrderByWithRelationInput
+  created_at?: Prisma.SortOrder
+  subscription_id?: Prisma.SortOrder
+  alert_subscriptions?: Prisma.AlertSubscriptionOrderByWithRelationInput
 }
 
 export type SeenItemWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  subscriptionId_url?: Prisma.SeenItemSubscriptionIdUrlCompoundUniqueInput
+  subscription_id_url?: Prisma.SeenItemSubscription_idUrlCompoundUniqueInput
   AND?: Prisma.SeenItemWhereInput | Prisma.SeenItemWhereInput[]
   OR?: Prisma.SeenItemWhereInput[]
   NOT?: Prisma.SeenItemWhereInput | Prisma.SeenItemWhereInput[]
   url?: Prisma.StringFilter<"SeenItem"> | string
-  createdAt?: Prisma.DateTimeFilter<"SeenItem"> | Date | string
-  subscriptionId?: Prisma.StringFilter<"SeenItem"> | string
-  subscription?: Prisma.XOR<Prisma.AlertSubscriptionScalarRelationFilter, Prisma.AlertSubscriptionWhereInput>
-}, "id" | "subscriptionId_url">
+  created_at?: Prisma.DateTimeFilter<"SeenItem"> | Date | string
+  subscription_id?: Prisma.StringFilter<"SeenItem"> | string
+  alert_subscriptions?: Prisma.XOR<Prisma.AlertSubscriptionScalarRelationFilter, Prisma.AlertSubscriptionWhereInput>
+}, "id" | "subscription_id_url">
 
 export type SeenItemOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   url?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
-  subscriptionId?: Prisma.SortOrder
+  created_at?: Prisma.SortOrder
+  subscription_id?: Prisma.SortOrder
   _count?: Prisma.SeenItemCountOrderByAggregateInput
   _max?: Prisma.SeenItemMaxOrderByAggregateInput
   _min?: Prisma.SeenItemMinOrderByAggregateInput
@@ -213,56 +213,56 @@ export type SeenItemScalarWhereWithAggregatesInput = {
   NOT?: Prisma.SeenItemScalarWhereWithAggregatesInput | Prisma.SeenItemScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"SeenItem"> | string
   url?: Prisma.StringWithAggregatesFilter<"SeenItem"> | string
-  createdAt?: Prisma.DateTimeWithAggregatesFilter<"SeenItem"> | Date | string
-  subscriptionId?: Prisma.StringWithAggregatesFilter<"SeenItem"> | string
+  created_at?: Prisma.DateTimeWithAggregatesFilter<"SeenItem"> | Date | string
+  subscription_id?: Prisma.StringWithAggregatesFilter<"SeenItem"> | string
 }
 
 export type SeenItemCreateInput = {
   id?: string
   url: string
-  createdAt?: Date | string
-  subscription: Prisma.AlertSubscriptionCreateNestedOneWithoutSeenItemsInput
+  created_at?: Date | string
+  alert_subscriptions: Prisma.AlertSubscriptionCreateNestedOneWithoutSeen_itemsInput
 }
 
 export type SeenItemUncheckedCreateInput = {
   id?: string
   url: string
-  createdAt?: Date | string
-  subscriptionId: string
+  created_at?: Date | string
+  subscription_id: string
 }
 
 export type SeenItemUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  subscription?: Prisma.AlertSubscriptionUpdateOneRequiredWithoutSeenItemsNestedInput
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  alert_subscriptions?: Prisma.AlertSubscriptionUpdateOneRequiredWithoutSeen_itemsNestedInput
 }
 
 export type SeenItemUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  subscriptionId?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  subscription_id?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type SeenItemCreateManyInput = {
   id?: string
   url: string
-  createdAt?: Date | string
-  subscriptionId: string
+  created_at?: Date | string
+  subscription_id: string
 }
 
 export type SeenItemUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type SeenItemUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  subscriptionId?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  subscription_id?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type SeenItemListRelationFilter = {
@@ -275,110 +275,110 @@ export type SeenItemOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type SeenItemSubscriptionIdUrlCompoundUniqueInput = {
-  subscriptionId: string
+export type SeenItemSubscription_idUrlCompoundUniqueInput = {
+  subscription_id: string
   url: string
 }
 
 export type SeenItemCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   url?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
-  subscriptionId?: Prisma.SortOrder
+  created_at?: Prisma.SortOrder
+  subscription_id?: Prisma.SortOrder
 }
 
 export type SeenItemMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   url?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
-  subscriptionId?: Prisma.SortOrder
+  created_at?: Prisma.SortOrder
+  subscription_id?: Prisma.SortOrder
 }
 
 export type SeenItemMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   url?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
-  subscriptionId?: Prisma.SortOrder
+  created_at?: Prisma.SortOrder
+  subscription_id?: Prisma.SortOrder
 }
 
-export type SeenItemCreateNestedManyWithoutSubscriptionInput = {
-  create?: Prisma.XOR<Prisma.SeenItemCreateWithoutSubscriptionInput, Prisma.SeenItemUncheckedCreateWithoutSubscriptionInput> | Prisma.SeenItemCreateWithoutSubscriptionInput[] | Prisma.SeenItemUncheckedCreateWithoutSubscriptionInput[]
-  connectOrCreate?: Prisma.SeenItemCreateOrConnectWithoutSubscriptionInput | Prisma.SeenItemCreateOrConnectWithoutSubscriptionInput[]
-  createMany?: Prisma.SeenItemCreateManySubscriptionInputEnvelope
+export type SeenItemCreateNestedManyWithoutAlert_subscriptionsInput = {
+  create?: Prisma.XOR<Prisma.SeenItemCreateWithoutAlert_subscriptionsInput, Prisma.SeenItemUncheckedCreateWithoutAlert_subscriptionsInput> | Prisma.SeenItemCreateWithoutAlert_subscriptionsInput[] | Prisma.SeenItemUncheckedCreateWithoutAlert_subscriptionsInput[]
+  connectOrCreate?: Prisma.SeenItemCreateOrConnectWithoutAlert_subscriptionsInput | Prisma.SeenItemCreateOrConnectWithoutAlert_subscriptionsInput[]
+  createMany?: Prisma.SeenItemCreateManyAlert_subscriptionsInputEnvelope
   connect?: Prisma.SeenItemWhereUniqueInput | Prisma.SeenItemWhereUniqueInput[]
 }
 
-export type SeenItemUncheckedCreateNestedManyWithoutSubscriptionInput = {
-  create?: Prisma.XOR<Prisma.SeenItemCreateWithoutSubscriptionInput, Prisma.SeenItemUncheckedCreateWithoutSubscriptionInput> | Prisma.SeenItemCreateWithoutSubscriptionInput[] | Prisma.SeenItemUncheckedCreateWithoutSubscriptionInput[]
-  connectOrCreate?: Prisma.SeenItemCreateOrConnectWithoutSubscriptionInput | Prisma.SeenItemCreateOrConnectWithoutSubscriptionInput[]
-  createMany?: Prisma.SeenItemCreateManySubscriptionInputEnvelope
+export type SeenItemUncheckedCreateNestedManyWithoutAlert_subscriptionsInput = {
+  create?: Prisma.XOR<Prisma.SeenItemCreateWithoutAlert_subscriptionsInput, Prisma.SeenItemUncheckedCreateWithoutAlert_subscriptionsInput> | Prisma.SeenItemCreateWithoutAlert_subscriptionsInput[] | Prisma.SeenItemUncheckedCreateWithoutAlert_subscriptionsInput[]
+  connectOrCreate?: Prisma.SeenItemCreateOrConnectWithoutAlert_subscriptionsInput | Prisma.SeenItemCreateOrConnectWithoutAlert_subscriptionsInput[]
+  createMany?: Prisma.SeenItemCreateManyAlert_subscriptionsInputEnvelope
   connect?: Prisma.SeenItemWhereUniqueInput | Prisma.SeenItemWhereUniqueInput[]
 }
 
-export type SeenItemUpdateManyWithoutSubscriptionNestedInput = {
-  create?: Prisma.XOR<Prisma.SeenItemCreateWithoutSubscriptionInput, Prisma.SeenItemUncheckedCreateWithoutSubscriptionInput> | Prisma.SeenItemCreateWithoutSubscriptionInput[] | Prisma.SeenItemUncheckedCreateWithoutSubscriptionInput[]
-  connectOrCreate?: Prisma.SeenItemCreateOrConnectWithoutSubscriptionInput | Prisma.SeenItemCreateOrConnectWithoutSubscriptionInput[]
-  upsert?: Prisma.SeenItemUpsertWithWhereUniqueWithoutSubscriptionInput | Prisma.SeenItemUpsertWithWhereUniqueWithoutSubscriptionInput[]
-  createMany?: Prisma.SeenItemCreateManySubscriptionInputEnvelope
+export type SeenItemUpdateManyWithoutAlert_subscriptionsNestedInput = {
+  create?: Prisma.XOR<Prisma.SeenItemCreateWithoutAlert_subscriptionsInput, Prisma.SeenItemUncheckedCreateWithoutAlert_subscriptionsInput> | Prisma.SeenItemCreateWithoutAlert_subscriptionsInput[] | Prisma.SeenItemUncheckedCreateWithoutAlert_subscriptionsInput[]
+  connectOrCreate?: Prisma.SeenItemCreateOrConnectWithoutAlert_subscriptionsInput | Prisma.SeenItemCreateOrConnectWithoutAlert_subscriptionsInput[]
+  upsert?: Prisma.SeenItemUpsertWithWhereUniqueWithoutAlert_subscriptionsInput | Prisma.SeenItemUpsertWithWhereUniqueWithoutAlert_subscriptionsInput[]
+  createMany?: Prisma.SeenItemCreateManyAlert_subscriptionsInputEnvelope
   set?: Prisma.SeenItemWhereUniqueInput | Prisma.SeenItemWhereUniqueInput[]
   disconnect?: Prisma.SeenItemWhereUniqueInput | Prisma.SeenItemWhereUniqueInput[]
   delete?: Prisma.SeenItemWhereUniqueInput | Prisma.SeenItemWhereUniqueInput[]
   connect?: Prisma.SeenItemWhereUniqueInput | Prisma.SeenItemWhereUniqueInput[]
-  update?: Prisma.SeenItemUpdateWithWhereUniqueWithoutSubscriptionInput | Prisma.SeenItemUpdateWithWhereUniqueWithoutSubscriptionInput[]
-  updateMany?: Prisma.SeenItemUpdateManyWithWhereWithoutSubscriptionInput | Prisma.SeenItemUpdateManyWithWhereWithoutSubscriptionInput[]
+  update?: Prisma.SeenItemUpdateWithWhereUniqueWithoutAlert_subscriptionsInput | Prisma.SeenItemUpdateWithWhereUniqueWithoutAlert_subscriptionsInput[]
+  updateMany?: Prisma.SeenItemUpdateManyWithWhereWithoutAlert_subscriptionsInput | Prisma.SeenItemUpdateManyWithWhereWithoutAlert_subscriptionsInput[]
   deleteMany?: Prisma.SeenItemScalarWhereInput | Prisma.SeenItemScalarWhereInput[]
 }
 
-export type SeenItemUncheckedUpdateManyWithoutSubscriptionNestedInput = {
-  create?: Prisma.XOR<Prisma.SeenItemCreateWithoutSubscriptionInput, Prisma.SeenItemUncheckedCreateWithoutSubscriptionInput> | Prisma.SeenItemCreateWithoutSubscriptionInput[] | Prisma.SeenItemUncheckedCreateWithoutSubscriptionInput[]
-  connectOrCreate?: Prisma.SeenItemCreateOrConnectWithoutSubscriptionInput | Prisma.SeenItemCreateOrConnectWithoutSubscriptionInput[]
-  upsert?: Prisma.SeenItemUpsertWithWhereUniqueWithoutSubscriptionInput | Prisma.SeenItemUpsertWithWhereUniqueWithoutSubscriptionInput[]
-  createMany?: Prisma.SeenItemCreateManySubscriptionInputEnvelope
+export type SeenItemUncheckedUpdateManyWithoutAlert_subscriptionsNestedInput = {
+  create?: Prisma.XOR<Prisma.SeenItemCreateWithoutAlert_subscriptionsInput, Prisma.SeenItemUncheckedCreateWithoutAlert_subscriptionsInput> | Prisma.SeenItemCreateWithoutAlert_subscriptionsInput[] | Prisma.SeenItemUncheckedCreateWithoutAlert_subscriptionsInput[]
+  connectOrCreate?: Prisma.SeenItemCreateOrConnectWithoutAlert_subscriptionsInput | Prisma.SeenItemCreateOrConnectWithoutAlert_subscriptionsInput[]
+  upsert?: Prisma.SeenItemUpsertWithWhereUniqueWithoutAlert_subscriptionsInput | Prisma.SeenItemUpsertWithWhereUniqueWithoutAlert_subscriptionsInput[]
+  createMany?: Prisma.SeenItemCreateManyAlert_subscriptionsInputEnvelope
   set?: Prisma.SeenItemWhereUniqueInput | Prisma.SeenItemWhereUniqueInput[]
   disconnect?: Prisma.SeenItemWhereUniqueInput | Prisma.SeenItemWhereUniqueInput[]
   delete?: Prisma.SeenItemWhereUniqueInput | Prisma.SeenItemWhereUniqueInput[]
   connect?: Prisma.SeenItemWhereUniqueInput | Prisma.SeenItemWhereUniqueInput[]
-  update?: Prisma.SeenItemUpdateWithWhereUniqueWithoutSubscriptionInput | Prisma.SeenItemUpdateWithWhereUniqueWithoutSubscriptionInput[]
-  updateMany?: Prisma.SeenItemUpdateManyWithWhereWithoutSubscriptionInput | Prisma.SeenItemUpdateManyWithWhereWithoutSubscriptionInput[]
+  update?: Prisma.SeenItemUpdateWithWhereUniqueWithoutAlert_subscriptionsInput | Prisma.SeenItemUpdateWithWhereUniqueWithoutAlert_subscriptionsInput[]
+  updateMany?: Prisma.SeenItemUpdateManyWithWhereWithoutAlert_subscriptionsInput | Prisma.SeenItemUpdateManyWithWhereWithoutAlert_subscriptionsInput[]
   deleteMany?: Prisma.SeenItemScalarWhereInput | Prisma.SeenItemScalarWhereInput[]
 }
 
-export type SeenItemCreateWithoutSubscriptionInput = {
+export type SeenItemCreateWithoutAlert_subscriptionsInput = {
   id?: string
   url: string
-  createdAt?: Date | string
+  created_at?: Date | string
 }
 
-export type SeenItemUncheckedCreateWithoutSubscriptionInput = {
+export type SeenItemUncheckedCreateWithoutAlert_subscriptionsInput = {
   id?: string
   url: string
-  createdAt?: Date | string
+  created_at?: Date | string
 }
 
-export type SeenItemCreateOrConnectWithoutSubscriptionInput = {
+export type SeenItemCreateOrConnectWithoutAlert_subscriptionsInput = {
   where: Prisma.SeenItemWhereUniqueInput
-  create: Prisma.XOR<Prisma.SeenItemCreateWithoutSubscriptionInput, Prisma.SeenItemUncheckedCreateWithoutSubscriptionInput>
+  create: Prisma.XOR<Prisma.SeenItemCreateWithoutAlert_subscriptionsInput, Prisma.SeenItemUncheckedCreateWithoutAlert_subscriptionsInput>
 }
 
-export type SeenItemCreateManySubscriptionInputEnvelope = {
-  data: Prisma.SeenItemCreateManySubscriptionInput | Prisma.SeenItemCreateManySubscriptionInput[]
+export type SeenItemCreateManyAlert_subscriptionsInputEnvelope = {
+  data: Prisma.SeenItemCreateManyAlert_subscriptionsInput | Prisma.SeenItemCreateManyAlert_subscriptionsInput[]
   skipDuplicates?: boolean
 }
 
-export type SeenItemUpsertWithWhereUniqueWithoutSubscriptionInput = {
+export type SeenItemUpsertWithWhereUniqueWithoutAlert_subscriptionsInput = {
   where: Prisma.SeenItemWhereUniqueInput
-  update: Prisma.XOR<Prisma.SeenItemUpdateWithoutSubscriptionInput, Prisma.SeenItemUncheckedUpdateWithoutSubscriptionInput>
-  create: Prisma.XOR<Prisma.SeenItemCreateWithoutSubscriptionInput, Prisma.SeenItemUncheckedCreateWithoutSubscriptionInput>
+  update: Prisma.XOR<Prisma.SeenItemUpdateWithoutAlert_subscriptionsInput, Prisma.SeenItemUncheckedUpdateWithoutAlert_subscriptionsInput>
+  create: Prisma.XOR<Prisma.SeenItemCreateWithoutAlert_subscriptionsInput, Prisma.SeenItemUncheckedCreateWithoutAlert_subscriptionsInput>
 }
 
-export type SeenItemUpdateWithWhereUniqueWithoutSubscriptionInput = {
+export type SeenItemUpdateWithWhereUniqueWithoutAlert_subscriptionsInput = {
   where: Prisma.SeenItemWhereUniqueInput
-  data: Prisma.XOR<Prisma.SeenItemUpdateWithoutSubscriptionInput, Prisma.SeenItemUncheckedUpdateWithoutSubscriptionInput>
+  data: Prisma.XOR<Prisma.SeenItemUpdateWithoutAlert_subscriptionsInput, Prisma.SeenItemUncheckedUpdateWithoutAlert_subscriptionsInput>
 }
 
-export type SeenItemUpdateManyWithWhereWithoutSubscriptionInput = {
+export type SeenItemUpdateManyWithWhereWithoutAlert_subscriptionsInput = {
   where: Prisma.SeenItemScalarWhereInput
-  data: Prisma.XOR<Prisma.SeenItemUpdateManyMutationInput, Prisma.SeenItemUncheckedUpdateManyWithoutSubscriptionInput>
+  data: Prisma.XOR<Prisma.SeenItemUpdateManyMutationInput, Prisma.SeenItemUncheckedUpdateManyWithoutAlert_subscriptionsInput>
 }
 
 export type SeenItemScalarWhereInput = {
@@ -387,32 +387,32 @@ export type SeenItemScalarWhereInput = {
   NOT?: Prisma.SeenItemScalarWhereInput | Prisma.SeenItemScalarWhereInput[]
   id?: Prisma.StringFilter<"SeenItem"> | string
   url?: Prisma.StringFilter<"SeenItem"> | string
-  createdAt?: Prisma.DateTimeFilter<"SeenItem"> | Date | string
-  subscriptionId?: Prisma.StringFilter<"SeenItem"> | string
+  created_at?: Prisma.DateTimeFilter<"SeenItem"> | Date | string
+  subscription_id?: Prisma.StringFilter<"SeenItem"> | string
 }
 
-export type SeenItemCreateManySubscriptionInput = {
+export type SeenItemCreateManyAlert_subscriptionsInput = {
   id?: string
   url: string
-  createdAt?: Date | string
+  created_at?: Date | string
 }
 
-export type SeenItemUpdateWithoutSubscriptionInput = {
+export type SeenItemUpdateWithoutAlert_subscriptionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type SeenItemUncheckedUpdateWithoutSubscriptionInput = {
+export type SeenItemUncheckedUpdateWithoutAlert_subscriptionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type SeenItemUncheckedUpdateManyWithoutSubscriptionInput = {
+export type SeenItemUncheckedUpdateManyWithoutAlert_subscriptionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -420,55 +420,55 @@ export type SeenItemUncheckedUpdateManyWithoutSubscriptionInput = {
 export type SeenItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   url?: boolean
-  createdAt?: boolean
-  subscriptionId?: boolean
-  subscription?: boolean | Prisma.AlertSubscriptionDefaultArgs<ExtArgs>
+  created_at?: boolean
+  subscription_id?: boolean
+  alert_subscriptions?: boolean | Prisma.AlertSubscriptionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["seenItem"]>
 
 export type SeenItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   url?: boolean
-  createdAt?: boolean
-  subscriptionId?: boolean
-  subscription?: boolean | Prisma.AlertSubscriptionDefaultArgs<ExtArgs>
+  created_at?: boolean
+  subscription_id?: boolean
+  alert_subscriptions?: boolean | Prisma.AlertSubscriptionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["seenItem"]>
 
 export type SeenItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   url?: boolean
-  createdAt?: boolean
-  subscriptionId?: boolean
-  subscription?: boolean | Prisma.AlertSubscriptionDefaultArgs<ExtArgs>
+  created_at?: boolean
+  subscription_id?: boolean
+  alert_subscriptions?: boolean | Prisma.AlertSubscriptionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["seenItem"]>
 
 export type SeenItemSelectScalar = {
   id?: boolean
   url?: boolean
-  createdAt?: boolean
-  subscriptionId?: boolean
+  created_at?: boolean
+  subscription_id?: boolean
 }
 
-export type SeenItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "url" | "createdAt" | "subscriptionId", ExtArgs["result"]["seenItem"]>
+export type SeenItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "url" | "created_at" | "subscription_id", ExtArgs["result"]["seenItem"]>
 export type SeenItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  subscription?: boolean | Prisma.AlertSubscriptionDefaultArgs<ExtArgs>
+  alert_subscriptions?: boolean | Prisma.AlertSubscriptionDefaultArgs<ExtArgs>
 }
 export type SeenItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  subscription?: boolean | Prisma.AlertSubscriptionDefaultArgs<ExtArgs>
+  alert_subscriptions?: boolean | Prisma.AlertSubscriptionDefaultArgs<ExtArgs>
 }
 export type SeenItemIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  subscription?: boolean | Prisma.AlertSubscriptionDefaultArgs<ExtArgs>
+  alert_subscriptions?: boolean | Prisma.AlertSubscriptionDefaultArgs<ExtArgs>
 }
 
 export type $SeenItemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "SeenItem"
   objects: {
-    subscription: Prisma.$AlertSubscriptionPayload<ExtArgs>
+    alert_subscriptions: Prisma.$AlertSubscriptionPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     url: string
-    createdAt: Date
-    subscriptionId: string
+    created_at: Date
+    subscription_id: string
   }, ExtArgs["result"]["seenItem"]>
   composites: {}
 }
@@ -863,7 +863,7 @@ readonly fields: SeenItemFieldRefs;
  */
 export interface Prisma__SeenItemClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  subscription<T extends Prisma.AlertSubscriptionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AlertSubscriptionDefaultArgs<ExtArgs>>): Prisma.Prisma__AlertSubscriptionClient<runtime.Types.Result.GetResult<Prisma.$AlertSubscriptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  alert_subscriptions<T extends Prisma.AlertSubscriptionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AlertSubscriptionDefaultArgs<ExtArgs>>): Prisma.Prisma__AlertSubscriptionClient<runtime.Types.Result.GetResult<Prisma.$AlertSubscriptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -895,8 +895,8 @@ export interface Prisma__SeenItemClient<T, Null = never, ExtArgs extends runtime
 export interface SeenItemFieldRefs {
   readonly id: Prisma.FieldRef<"SeenItem", 'String'>
   readonly url: Prisma.FieldRef<"SeenItem", 'String'>
-  readonly createdAt: Prisma.FieldRef<"SeenItem", 'DateTime'>
-  readonly subscriptionId: Prisma.FieldRef<"SeenItem", 'String'>
+  readonly created_at: Prisma.FieldRef<"SeenItem", 'DateTime'>
+  readonly subscription_id: Prisma.FieldRef<"SeenItem", 'String'>
 }
     
 
