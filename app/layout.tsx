@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${playfair.variable} ${caveat.variable} antialiased`}>
+      <body suppressHydrationWarning className={`${playfair.variable} ${caveat.variable} antialiased`}>
         {children}
       </body>
     </html>
