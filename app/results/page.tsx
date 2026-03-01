@@ -4,130 +4,6 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-/* ── Sample results — will be replaced by API data once functionality is wired ── */
-const sampleResults = [
-    {
-        id: 1,
-        name: "Vintage Levi 501 Jeans",
-        price: 45,
-        source: "eBay",
-        url: "https://ebay.com",
-        image: "/jeans.png",
-        matchNote: "90s medium wash, 32×30 — great condition, minimal distressing",
-        rotation: -3,
-    },
-    {
-        id: 2,
-        name: "Oversized Bomber Jacket",
-        price: 62,
-        source: "Depop",
-        url: "https://depop.com",
-        image: "/bomber_jacket.png",
-        matchNote: "Dark olive, fits oversized M/L, barely worn",
-        rotation: 2,
-    },
-    {
-        id: 3,
-        name: "Linen Blend Blazer",
-        price: 38,
-        source: "Poshmark",
-        url: "https://poshmark.com",
-        image: "/blazer.png",
-        matchNote: "Beige linen, relaxed fit, perfect for layering",
-        rotation: -1.5,
-    },
-    {
-        id: 4,
-        name: "Ribbed Knit Tank Top",
-        price: 18,
-        source: "ThredUp",
-        url: "https://thredup.com",
-        image: "/tank_top.png",
-        matchNote: "Cream colored, stretchy rib knit, size S",
-        rotation: 3,
-    },
-    {
-        id: 5,
-        name: "Handmade Ceramic Vase",
-        price: 55,
-        source: "Etsy",
-        url: "https://etsy.com",
-        image: "/vase.png",
-        matchNote: "Minimalist stone finish, 8\" tall, slight imperfections add character",
-        rotation: -2,
-    },
-    {
-        id: 6,
-        name: "Cotton Button-Down Shirt",
-        price: 28,
-        source: "Facebook Marketplace",
-        url: "https://facebook.com/marketplace",
-        image: "/shirt.png",
-        matchNote: "White oxford cloth, slightly oversized, rolled cuffs",
-        rotation: 1.5,
-    },
-    {
-        id: 7,
-        name: "Pleated Midi Dress",
-        price: 42,
-        source: "Depop",
-        url: "https://depop.com",
-        image: "/dress.png",
-        matchNote: "Off-white, elegant drape, fits true to size",
-        rotation: -2.5,
-    },
-    {
-        id: 8,
-        name: "Soy Wax Candle Set",
-        price: 24,
-        source: "Etsy",
-        url: "https://etsy.com",
-        image: "/candle.png",
-        matchNote: "Amber + sandalwood scent, 40hr burn time, black ceramic vessel",
-        rotation: 2.5,
-    },
-    {
-        id: 9,
-        name: "Vintage Bedside Lamp",
-        price: 35,
-        source: "Craigslist",
-        url: "https://craigslist.org",
-        image: "/lamp1.png",
-        matchNote: "Pleated fabric shade, ceramic base, warm glow",
-        rotation: -1,
-    },
-    {
-        id: 10,
-        name: "Tailored Wool Slacks",
-        price: 50,
-        source: "eBay",
-        url: "https://ebay.com",
-        image: "/slacks.png",
-        matchNote: "Charcoal gray, high rise, wide leg — vintage Armani",
-        rotation: 3.5,
-    },
-    {
-        id: 11,
-        name: "Modern Desk Lamp",
-        price: 68,
-        source: "Facebook Marketplace",
-        url: "https://facebook.com/marketplace",
-        image: "/lamp2.png",
-        matchNote: "Stacked stone base, globe silhouette, warm ambient light",
-        rotation: -3.5,
-    },
-    {
-        id: 12,
-        name: "Off-Shoulder Cami Top",
-        price: 22,
-        source: "Poshmark",
-        url: "https://poshmark.com",
-        image: "/cami.png",
-        matchNote: "Cream white, sleek fit, stretchy fabric",
-        rotation: 1,
-    },
-];
-
 const sourceColors: Record<string, string> = {
     eBay: "#e53935",
     Depop: "#ff6347",
@@ -165,15 +41,10 @@ export default function ResultsPage() {
         return () => clearTimeout(timer);
     }, []);
 
-    // Fallback data structure for styling if accessed directly without searching
-    const displayQuery = searchData || {
-        query: "Vintage Levi 501 Jeans",
-        description: "Looking for 90s Levi 501 jeans, size 32×30, medium wash. Prefer minimal distressing.",
-        budget: 75,
-        status: "IN_PROGRESS",
-    };
-
-    const displayResults = searchData?.results?.length > 0 ? searchData.results : sampleResults;
+    // Only show real search data; no fake defaults when user lands without searching
+    const hasRealSearch = searchData?.results?.length > 0;
+    const displayQuery = searchData || null;
+    const displayResults = hasRealSearch ? searchData.results : [];
 
     const handleSubscribe = async () => {
         if (!notifyEmail && !notifyPhone) return;
@@ -199,6 +70,57 @@ export default function ResultsPage() {
             setNotifyStatus("error");
         }
     };
+
+    // No search yet — show empty state (e.g. direct visit or deploy without Docker scraper)
+    if (!hasRealSearch) {
+        return (
+            <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 48 }}>
+                <Link
+                    href="/"
+                    style={{
+                        fontFamily: "var(--font-caveat), cursive",
+                        fontSize: "1rem",
+                        color: "#9b8260",
+                        textDecoration: "none",
+                        marginBottom: 24,
+                    }}
+                >
+                    ← back home
+                </Link>
+                <h1
+                    style={{
+                        fontFamily: "var(--font-playfair), 'Playfair Display', Georgia, serif",
+                        fontSize: "clamp(1.4rem, 3vw, 2rem)",
+                        fontStyle: "italic",
+                        fontWeight: 400,
+                        color: "#1a1208",
+                        margin: 0,
+                        textAlign: "center",
+                    }}
+                >
+                    No results yet
+                </h1>
+                <p style={{ fontFamily: "var(--font-caveat), cursive", fontSize: "1.1rem", color: "#8b7355", marginTop: 12, textAlign: "center" }}>
+                    Run a search from the home page and we&apos;ll show your finds here.
+                </p>
+                <Link
+                    href="/search"
+                    style={{
+                        marginTop: 24,
+                        fontFamily: "var(--font-playfair), serif",
+                        fontSize: "1rem",
+                        color: "#faf4e8",
+                        background: "#1a1208",
+                        padding: "12px 24px",
+                        borderRadius: 24,
+                        textDecoration: "none",
+                    }}
+                >
+                    Start a search →
+                </Link>
+            </div>
+        );
+    }
 
     return (
         <div
@@ -282,7 +204,7 @@ export default function ResultsPage() {
                             color: "#6b5a3e",
                         }}
                     >
-                        budget: <strong>${displayQuery.budget || "Any"}</strong>
+                        budget: <strong>${displayQuery?.budget ?? "Any"}</strong>
                     </div>
                     <div
                         style={{
