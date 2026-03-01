@@ -1,76 +1,148 @@
-# Thrift - AI Product Search
+# Thrift — AI-Powered Second-Hand Product Discovery
 
-An agentic product discovery platform that uses LLMs (Anthropic Claude 3.5 Sonnet) and a custom OpenClaw web scraping agent to find real second-hand and vintage products across the web based on natural language queries.
+An agentic product discovery platform that uses LLMs (Google Gemini 2.5 Flash) and a custom OpenClaw web scraping agent to find real second-hand and vintage products across eBay, Etsy, Depop, Poshmark, and Craigslist — all from a natural language query or uploaded image.
 
 ## Architecture
-- **Frontend/Backend:** Next.js (React), storing sessions in `sessionStorage`
-- **Conversational LLM UI:** Modal Serverless Python App (`modal/product_research_llm.py`) utilizing Anthropic API.
-- **Agentic Scraper:** Containerized OpenClaw instance with the `product-search` skill, utilizing the Decodo scraping API and OpenAI.
+
+```
+User ──► Next.js Frontend ──► Modal LLM ("Omniscient Scout")
+              │                      │
+              │                      ├── Gemini 2.5 Flash (conversational AI)
+              │                      ├── Supermemory (preference memory)
+              │                      └── SD 3.5 Large Turbo (reference images)
+              │
+              ├── OpenClaw Docker Agent ──► Decodo Scraping API
+              │       (eBay, Etsy, Depop, Poshmark, Craigslist)
+              │
+              ├── PostgreSQL + Prisma (subscriptions, seen items)
+              │
+              └── MailJet (email notifications every 15 min)
+```
+
+- **Frontend/Backend:** Next.js 16 (React), session-based conversation state
+- **Conversational LLM:** Modal serverless Python app using Gemini 2.5 Flash with image understanding and Supermemory for cross-session preference recall
+- **AI Image Generation:** Stable Diffusion 3.5 Large Turbo on Modal A100 GPUs — generates 3 reference images for visual confirmation
+- **Agentic Scraper:** Containerized OpenClaw instance with the `product-search` skill, using the Decodo scraping API
+- **Notifications:** MailJet transactional emails triggered by a 15-minute cron scheduler
 
 ## Prerequisites
+
 - Node.js (v20+)
-- Docker Dekstop
-- Python 3.12+ (for Modal)
-- accounts on [Modal](https://modal.com/), Anthropic, OpenAI, and Decodo
+- Docker Desktop
+- Python 3.12+ (for Modal CLI)
+- PostgreSQL (local or remote)
+- Accounts on [Modal](https://modal.com/), [Google AI Studio](https://aistudio.google.com/) (Gemini), [Decodo](https://decodo.com/), and [MailJet](https://www.mailjet.com/)
 
-## 1. Configure the LLM Chat UI (Modal)
+## 1. Configure Modal Secrets
 
-The conversational assistant that extracts requirements from the user is deployed to Modal.
+The LLM and image generation services run on Modal and require API keys stored as Modal secrets.
 
-1. Ensure you have the `modal` CLI installed (`pip install modal`) and authenticated (`modal token new`).
-2. Add your Anthropic API Key to Modal:
-   ```bash
-   modal secret create anthropic-secret ANTHROPIC_API_KEY="your-key-here"
-   ```
-3. Deploy the Modal App:
-   ```bash
-   modal deploy modal/product_research_llm.py
-   ```
-4. Copy the deployed ASGI App URL (e.g., `https://your-namespace--product-research-llm-fastapi-app.modal.run`) and paste it into the root `.env` file for **`MODAL_CHAT_URL`**.
+```bash
+# Install and authenticate Modal CLI
+pip install modal
+modal token new
 
-## 2. Start the OpenClaw Scraping Agent (Docker)
+# Create required secrets
+modal secret create gemini-secret GEMINI_API_KEY="your-gemini-api-key"
+modal secret create supermemory-secret SUPERMEMORY_API_KEY="your-supermemory-api-key"
+```
 
-The agent responsible for actually surfing Etsy, eBay, etc., runs inside a Docker container to ensure its dependencies and the OpenClaw gateway run smoothly.
+## 2. Deploy the LLM Chat (Modal)
 
-1. Open the `docker/` directory.
-2. Edit `docker/.env` with your API keys:
+The "Omniscient Scout" conversational assistant is deployed to Modal. It handles multi-turn chat, image understanding, and generates 3 distinct reference image prompts.
+
+```bash
+modal deploy modal/product_research_llm.py
+```
+
+Copy the printed URL (e.g., `https://your-namespace--product-research-llm-chat.modal.run`) and set it as `MODAL_CHAT_URL` in the root `.env` file.
+
+## 3. Deploy AI Image Generation (Modal)
+
+The reference image generator uses Stable Diffusion 3.5 Large Turbo on A100 GPUs.
+
+```bash
+modal deploy modal/image_gen_modal.py
+```
+
+Copy the printed URL and set it as `MODAL_URL` in the root `.env` file.
+
+## 4. Start the OpenClaw Scraping Agent (Docker)
+
+The agent responsible for searching eBay, Etsy, Depop, Poshmark, and Craigslist runs inside a Docker container.
+
+1. Edit `docker/.env` with your API keys:
    ```env
    OPENAI_API_KEY=your-openai-key-here
    DECODO_TOKEN=your-decodo-basic-auth-token-here
    ```
-3. Start the Docker container:
+2. Start the Docker container:
    ```bash
    cd docker
    docker compose up -d --build
    ```
-4. The OpenClaw scraping agent is now bound to your system's `localhost:18789` and the Next.js API route will execute its python scraper directly using `docker exec`.
 
-## 3. Run the Next.js Frontend
+The scraping agent binds to `localhost:18789` and the Next.js API executes its Python scraper directly via `docker exec`.
 
-1. Ensure the root `.env` file is properly configured with your database URL, Modal URL, and API keys.
-2. Ensure you have pushed the Prisma schema to your database if you want to use the DB for logging (optional for core flow):
-   ```bash
-   npx prisma generate
-   npx prisma db push
-   ```
-3. Install dependencies:
-   ```bash
-   npm install
-   ```
-4. Start the development server:
-   ```bash
-   npm run dev
-   ```
-5. Navigate to `http://localhost:3000` to begin your product search!
+## 5. Set Up the Database
 
-## 4. Run the Notification Scheduler (Optional)
+```bash
+# Generate the Prisma client
+npx prisma generate
 
-Users can opt in to automatically receive SMS/Email notifications every 15 minutes whenever new listings matching their search are scraped.
+# Push the schema to your PostgreSQL database
+npx prisma db push
+```
 
-1. Ensure both the Next.js development server (Step 3) and the Docker container (Step 2) are running.
-2. Ensure you have injected your `MAILJET_SENDER_EMAIL` inside the root `.env` file (and verified the email address identity actively in your MailJet dashboard settings so it does not result in a 401 Unauthorized block).
-3. In a new terminal tab, run the scheduled Node orchestrator:
-   ```bash
-   node check_alerts.js
-   ```
-4. The background process will concurrently trigger the Openclaw Python scraper and physically dispatch the beautiful HTML notification alerts directly to the user's Inbox!
+## 6. Configure Environment Variables
+
+Edit the root `.env` file with your URLs and keys:
+
+```env
+DATABASE_URL="postgresql://user@localhost:5432/thrift?schema=public"
+MODAL_URL="https://your-namespace--product-image-gen-generate.modal.run"
+MODAL_CHAT_URL="https://your-namespace--product-research-llm-chat.modal.run"
+GEMINI_API_KEY="your-gemini-api-key"
+MAILJET_SENDER_EMAIL="your-verified-mailjet-sender@email.com"
+```
+
+## 7. Run the Next.js Frontend
+
+```bash
+npm install
+npm run dev
+```
+
+Navigate to `http://localhost:3000` to begin your product search!
+
+## 8. Run the Notification Scheduler (Optional)
+
+Users can subscribe to email alerts that fire every 15 minutes when new matching listings are scraped.
+
+**Option A — Modal Cron (Production):**
+```bash
+modal deploy modal/alert_cron.py
+```
+
+**Option B — Local Development:**
+The cron API endpoint can be triggered manually:
+```bash
+curl http://localhost:3000/api/alerts/cron
+```
+
+> **Note:** Ensure both the Next.js server and Docker container are running. The sender email must be verified in your [MailJet dashboard](https://app.mailjet.com/account/sender).
+
+## Key Features
+
+| Feature | Description |
+|---|---|
+| **Natural Language Search** | Describe what you want; the AI asks follow-up questions to refine |
+| **Image Upload** | Upload a photo and the AI identifies the product to search for |
+| **AI Reference Images** | 3 distinct Stable Diffusion reference images for visual confirmation |
+| **Multi-Marketplace** | Searches eBay, Etsy, Depop, Poshmark, and Craigslist simultaneously |
+| **Smart Notifications** | Email alerts every 15 min for new matching listings |
+| **Preference Memory** | Supermemory remembers what to avoid across sessions |
+
+## Tech Stack
+
+Next.js · React · TypeScript · Python · Gemini 2.5 Flash · Stable Diffusion 3.5 · Modal · PostgreSQL · Prisma · Docker · MailJet · Decodo · OpenClaw · Supermemory

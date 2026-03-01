@@ -21,7 +21,7 @@ web_app = FastAPI()
 # Gemini + Supermemory (sponsor secrets)
 secrets = [
     modal.Secret.from_name("gemini-secret"),
-    modal.Secret.from_name("supermemory-secret"),
+    modal.Secret.from_name("supermemory-secret", required_keys=[]),
 ]
 
 image = (
@@ -116,12 +116,26 @@ def to_gemini_history(messages):
     return history
 
 
+def _strip_images(messages):
+    """Return a copy of messages with image data removed (for RPC transport)."""
+    stripped = []
+    for m in messages:
+        clean = {k: v for k, v in m.items() if k not in ("image", "image_data")}
+        # Keep a flag so we know an image was present
+        if m.get("image"):
+            clean["_had_image"] = True
+            clean["image_mime"] = m.get("image_mime", "image/jpeg")
+        stripped.append(clean)
+    return stripped
+
+
 @app.cls(image=image, scaledown_window=1800, secrets=secrets)
 class ProductResearchLLM:
     @modal.enter()
     def load(self):
         genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-        self.sm_client = Supermemory(api_key=os.environ["SUPERMEMORY_API_KEY"])
+        sm_key = os.environ.get("SUPERMEMORY_API_KEY")
+        self.sm_client = Supermemory(api_key=sm_key) if sm_key else None
         # Override via Modal secret GEMINI_MODEL. Default: stable 2.5 Flash (from List Models).
         model_id = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
         self.model = genai.GenerativeModel(
@@ -188,6 +202,11 @@ class ProductResearchLLM:
         }
 
     @modal.method()
+    async def chat_without_image(self, messages_no_images: list, supermemory_context: str = "") -> dict:
+        """Same as chat() but for messages that had images stripped for RPC transport."""
+        return await self.chat(messages_no_images, supermemory_context)
+
+    @modal.method()
     async def finalize(self, messages: list) -> dict:
         user_id = "user_default"
         history = to_gemini_history(messages)
@@ -220,8 +239,80 @@ async def chat_endpoint(request: Request):
     messages = body.get("messages", [])
     if not messages:
         return JSONResponse({"error": "messages required"}, status_code=400)
+    
+    # Check if any message contains image data (which would be too large for Modal RPC)
+    has_images = any(m.get("image") for m in messages)
+    
     try:
-        result = await ProductResearchLLM().chat.remote.aio(messages)
+        if has_images:
+            # Images are too large for Modal's RPC serialization (~2MB limit).
+            # Run Gemini directly in this ASGI handler instead.
+            import google.generativeai as genai_local
+            from supermemory import Supermemory as SM
+            
+            genai_local.configure(api_key=os.environ["GEMINI_API_KEY"])
+            sm_key = os.environ.get("SUPERMEMORY_API_KEY")
+            sm_client = SM(api_key=sm_key) if sm_key else None
+            model_id = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+            model = genai_local.GenerativeModel(
+                model_name=model_id,
+                system_instruction=SYSTEM_PROMPT,
+            )
+            
+            user_id = "user_default"
+            last_query = messages[-1]["content"]
+            context = "No previous memory found."
+            
+            try:
+                profile = sm_client.profile(container_tag=user_id, q=last_query)
+                static = getattr(profile.profile, "static", None) or []
+                dynamic = getattr(profile.profile, "dynamic", None) or []
+                if isinstance(static, list):
+                    static = "\n".join(static) if static else "None"
+                if isinstance(dynamic, list):
+                    dynamic = "\n".join(dynamic) if dynamic else "None"
+                context = f"Static Prefs: {static}\nDynamic Context: {dynamic}"
+            except Exception:
+                pass
+            
+            history = to_gemini_history(messages)
+            chat_session = model.start_chat(history=history)
+            memory_prompt = (
+                f"[THINGS TO AVOID — only use to filter out, do not suggest these]:\n{context}\n\n"
+                f"[CURRENT REQUEST — respond only to this]: {last_query}"
+            )
+            last_msg = messages[-1]
+            if last_msg.get("image"):
+                parts = [
+                    {"inline_data": {"mime_type": last_msg.get("image_mime") or "image/jpeg", "data": last_msg["image"]}},
+                    {"text": memory_prompt},
+                ]
+                response = chat_session.send_message(parts)
+            else:
+                response = chat_session.send_message(memory_prompt)
+            reply = response.text
+            
+            try:
+                sm_client.add(
+                    content=f"User search: {last_query}. Assistant found: {reply}",
+                    container_tag=user_id,
+                )
+            except Exception:
+                pass
+            
+            product_desc = parse_product_description(reply)
+            result = {
+                "reply": reply,
+                "needs_more_info": product_desc is None or not product_desc.get("ready", False),
+                "product_description": product_desc,
+                "image_prompt": product_desc.get("image_prompt") if product_desc else None,
+            }
+        else:
+            # No images — safe to use Modal RPC
+            result = await ProductResearchLLM().chat.remote.aio(
+                messages,
+                body.get("supermemory_context", ""),
+            )
         return JSONResponse(result)
     except Exception as e:
         import traceback
@@ -244,7 +335,9 @@ async def finalize_endpoint(request: Request):
     messages = body.get("messages", [])
     if not messages:
         return JSONResponse({"error": "messages required"}, status_code=400)
-    result = await ProductResearchLLM().finalize.remote.aio(messages)
+    # Strip images from finalize (not needed, saves RPC bandwidth)
+    clean_messages = _strip_images(messages)
+    result = await ProductResearchLLM().finalize.remote.aio(clean_messages)
     return JSONResponse(result)
 
 
