@@ -7,6 +7,9 @@ import Image from "next/image";
 interface Message {
     role: "user" | "assistant";
     content: string;
+    /** Base64 image data (user message with photo for identification/tagging) */
+    image?: string;
+    image_mime?: string;
 }
 
 interface ProductDescription {
@@ -20,6 +23,8 @@ interface ProductDescription {
     max_price?: number;
     keywords: string[];
     image_prompt: string;
+    /** When present, use these 3 distinct prompts for the reference images (different styles/variations). */
+    image_prompts?: string[];
 }
 
 type Phase = "chat" | "images" | "searching" | "done";
@@ -36,6 +41,8 @@ function SearchPageContent() {
     const [productDesc, setProductDesc] = useState<ProductDescription | null>(null);
     const [generatedImages, setGeneratedImages] = useState<string[]>([]);
     const [removedImages, setRemovedImages] = useState<Set<number>>(new Set());
+    // Track load state per image: 'pending' | 'loaded' | 'error'. Options show only when all have settled.
+    const [imageLoadStates, setImageLoadStates] = useState<("pending" | "loaded" | "error")[]>([]);
 
     const chatEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -46,17 +53,33 @@ function SearchPageContent() {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
-    // Send initial query if provided via URL
+    // If user lands on /search with no query and no stored image, send them to home first
     useEffect(() => {
-        if (initialQuery && !hasSentInitial.current) {
+        if (!initialQuery && messages.length === 0 && typeof window !== "undefined" && !sessionStorage.getItem("searchImage")) {
+            router.replace("/");
+        }
+    }, [initialQuery, messages.length, router]);
+
+    // Send initial query (and optional image) when arriving from home
+    useEffect(() => {
+        if (!hasSentInitial.current && (initialQuery || (typeof window !== "undefined" && sessionStorage.getItem("searchImage")))) {
             hasSentInitial.current = true;
-            sendMessage(initialQuery);
+            const imageB64 = typeof window !== "undefined" ? sessionStorage.getItem("searchImage") : null;
+            const imageMime = typeof window !== "undefined" ? sessionStorage.getItem("searchImageMime") : null;
+            const prompt = typeof window !== "undefined" ? sessionStorage.getItem("searchImagePrompt") : null;
+            const text = initialQuery || prompt || "What is this? Find items like this.";
+            if (imageB64) {
+                sessionStorage.removeItem("searchImage");
+                sessionStorage.removeItem("searchImageMime");
+                sessionStorage.removeItem("searchImagePrompt");
+            }
+            sendMessage(text, imageB64 || undefined, imageMime || undefined);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [initialQuery]);
 
-    async function sendMessage(text: string) {
-        const userMsg: Message = { role: "user", content: text };
+    async function sendMessage(text: string, imageBase64?: string, imageMime?: string) {
+        const userMsg: Message = { role: "user", content: text, ...(imageBase64 && { image: imageBase64, image_mime: imageMime || "image/jpeg" }) };
         const updatedMessages = [...messages, userMsg];
         setMessages(updatedMessages);
         setInput("");
@@ -93,11 +116,16 @@ function SearchPageContent() {
     }
 
     async function generateImages(desc: ProductDescription) {
-        const prompts = [
-            desc.image_prompt,
-            `${desc.name} ${desc.brand || ""} product photo`,
-            `${desc.category} ${desc.colorway || ""} styled flat lay`,
-        ];
+        setPhase("images");
+        // Use 3 distinct prompts from Scout when available (different styles/variations); else fallback
+        const prompts =
+            desc.image_prompts && desc.image_prompts.length >= 3
+                ? desc.image_prompts.slice(0, 3)
+                : [
+                      desc.image_prompt,
+                      `${desc.name} ${desc.brand || ""} product photo`,
+                      `${desc.category} ${desc.colorway || ""} styled flat lay`,
+                  ];
 
         const urls: string[] = [];
         for (const prompt of prompts) {
@@ -105,21 +133,20 @@ function SearchPageContent() {
             urls.push(url);
         }
 
-        // Preload images invisibly in background so the UI doesn't transition until they're ready
-        await Promise.all(
-            urls.map((url) => {
-                return new Promise((resolve) => {
-                    const img = new window.Image();
-                    img.onload = resolve;
-                    img.onerror = resolve;
-                    img.src = url;
-                });
-            })
-        );
-
         setGeneratedImages(urls);
-        setPhase("images");
+        setImageLoadStates(urls.map(() => "pending" as const));
     }
+
+    function markImageLoadState(index: number, state: "loaded" | "error") {
+        setImageLoadStates((prev) => {
+            const next = [...prev];
+            if (index >= 0 && index < next.length) next[index] = state;
+            return next;
+        });
+    }
+
+    const imagesReady =
+        imageLoadStates.length > 0 && imageLoadStates.every((s) => s !== "pending");
 
     function toggleRemoveImage(index: number) {
         setRemovedImages((prev) => {
@@ -145,12 +172,22 @@ function SearchPageContent() {
                 body: JSON.stringify({ messages }),
             });
 
-            // Trigger the product search
+            // Search using name, tags, and Scout keywords (preferences); avoid anti_preferences in query
+            const searchParts = [
+                productDesc.name,
+                productDesc.brand,
+                productDesc.category,
+                productDesc.colorway,
+                productDesc.condition,
+                productDesc.keywords?.join(" "),
+            ].filter(Boolean) as string[];
+            const searchQuery = searchParts.join(" ").trim() || productDesc.name;
+
             const searchRes = await fetch("/api/agent-search", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    query: `${productDesc.name} ${productDesc.brand || ""} ${productDesc.keywords?.join(" ") || ""}`,
+                    query: searchQuery,
                     budget: productDesc.max_price,
                 }),
             });
@@ -251,6 +288,20 @@ function SearchPageContent() {
                                 boxShadow: "0 1px 4px rgba(26, 18, 8, 0.06)",
                             }}
                         >
+                            {msg.role === "user" && msg.image && (
+                                <img
+                                    src={`data:${msg.image_mime || "image/jpeg"};base64,${msg.image}`}
+                                    alt="Uploaded"
+                                    style={{
+                                        width: 120,
+                                        height: 120,
+                                        objectFit: "cover",
+                                        borderRadius: 8,
+                                        marginBottom: 8,
+                                        display: "block",
+                                    }}
+                                />
+                            )}
                             <p
                                 style={{
                                     margin: 0,
@@ -341,17 +392,31 @@ function SearchPageContent() {
             {/* ── Images Phase ── */}
             {phase === "images" && (
                 <div style={{ flex: 1, padding: "24px 40px" }}>
-                    <p
-                        style={{
-                            fontFamily: "var(--font-caveat), cursive",
-                            fontSize: "1.1rem",
-                            color: "#8b7355",
-                            marginBottom: 20,
-                            textAlign: "center",
-                        }}
-                    >
-                        here&apos;s what we think you mean — tap to remove any that don&apos;t match
-                    </p>
+                    {!imagesReady ? (
+                        <p
+                            style={{
+                                fontFamily: "var(--font-caveat), cursive",
+                                fontSize: "1.1rem",
+                                color: "#8b7355",
+                                marginBottom: 20,
+                                textAlign: "center",
+                            }}
+                        >
+                            creating your reference images...
+                        </p>
+                    ) : (
+                        <p
+                            style={{
+                                fontFamily: "var(--font-caveat), cursive",
+                                fontSize: "1.1rem",
+                                color: "#8b7355",
+                                marginBottom: 20,
+                                textAlign: "center",
+                            }}
+                        >
+                            here&apos;s what we think you mean — tap to remove any that don&apos;t match
+                        </p>
+                    )}
 
                     <div
                         style={{
@@ -364,6 +429,7 @@ function SearchPageContent() {
                     >
                         {generatedImages.map((url, i) => {
                             const isRemoved = removedImages.has(i);
+                            const loadState = imageLoadStates[i] ?? "pending";
                             return (
                                 <div
                                     key={i}
@@ -381,16 +447,49 @@ function SearchPageContent() {
                                         aspectRatio: "1",
                                     }}
                                 >
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
-                                        src={url}
-                                        alt={`Reference ${i + 1}`}
-                                        style={{
-                                            width: "100%",
-                                            height: "100%",
-                                            objectFit: "cover",
-                                        }}
-                                    />
+                                    {loadState === "pending" && (
+                                        <div
+                                            style={{
+                                                width: "100%",
+                                                height: "100%",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                background: "rgba(155, 130, 96, 0.12)",
+                                            }}
+                                        >
+                                            <div
+                                                className="search-spinner"
+                                                style={{ width: 32, height: 32, borderWidth: 2 }}
+                                            />
+                                        </div>
+                                    )}
+                                    {loadState === "error" && (
+                                        <img
+                                            src="https://placehold.co/400x400/e8dfd0/9b8260?text=Reference"
+                                            alt="Reference"
+                                            style={{
+                                                width: "100%",
+                                                height: "100%",
+                                                objectFit: "cover",
+                                            }}
+                                        />
+                                    )}
+                                    {(loadState === "loaded" || loadState === "pending") && (
+                                        /* eslint-disable-next-line @next/next/no-img-element */
+                                        <img
+                                            src={url}
+                                            alt={`Reference ${i + 1}`}
+                                            style={{
+                                                width: "100%",
+                                                height: "100%",
+                                                objectFit: "cover",
+                                                display: loadState === "pending" ? "none" : "block",
+                                            }}
+                                            onLoad={() => markImageLoadState(i, "loaded")}
+                                            onError={() => markImageLoadState(i, "error")}
+                                        />
+                                    )}
                                     {isRemoved && (
                                         <div
                                             style={{
@@ -413,7 +512,7 @@ function SearchPageContent() {
                                             </span>
                                         </div>
                                     )}
-                                    {!isRemoved && (
+                                    {!isRemoved && loadState === "loaded" && (
                                         <div
                                             style={{
                                                 position: "absolute",
@@ -438,79 +537,83 @@ function SearchPageContent() {
                         })}
                     </div>
 
-                    {/* Product summary card */}
-                    {productDesc && (
-                        <div
-                            style={{
-                                maxWidth: 500,
-                                margin: "0 auto 28px",
-                                background: "rgba(250, 244, 232, 0.7)",
-                                borderRadius: 10,
-                                padding: "20px 24px",
-                                boxShadow: "0 2px 8px rgba(26, 18, 8, 0.06)",
-                            }}
-                        >
-                            <h3
-                                style={{
-                                    fontFamily: "var(--font-playfair), 'Playfair Display', serif",
-                                    fontSize: "1.15rem",
-                                    fontWeight: 500,
-                                    color: "#1a1208",
-                                    margin: "0 0 12px",
-                                }}
-                            >
-                                {productDesc.name}
-                            </h3>
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
-                                {productDesc.brand && <Tag label={productDesc.brand} />}
-                                {productDesc.category && <Tag label={productDesc.category} />}
-                                {productDesc.size && <Tag label={productDesc.size} />}
-                                {productDesc.colorway && <Tag label={productDesc.colorway} />}
-                                {productDesc.condition && <Tag label={productDesc.condition} />}
-                            </div>
-                            {productDesc.max_price && (
-                                <p
+                    {/* Product summary + button only after all images have loaded or failed */}
+                    {imagesReady && (
+                        <>
+                            {productDesc && (
+                                <div
                                     style={{
-                                        fontFamily: "var(--font-caveat), cursive",
-                                        fontSize: "1.1rem",
-                                        color: "#2e7d32",
-                                        margin: "8px 0 0",
+                                        maxWidth: 500,
+                                        margin: "0 auto 28px",
+                                        background: "rgba(250, 244, 232, 0.7)",
+                                        borderRadius: 10,
+                                        padding: "20px 24px",
+                                        boxShadow: "0 2px 8px rgba(26, 18, 8, 0.06)",
                                     }}
                                 >
-                                    budget: ${productDesc.max_price}
-                                </p>
+                                    <h3
+                                        style={{
+                                            fontFamily: "var(--font-playfair), 'Playfair Display', serif",
+                                            fontSize: "1.15rem",
+                                            fontWeight: 500,
+                                            color: "#1a1208",
+                                            margin: "0 0 12px",
+                                        }}
+                                    >
+                                        {productDesc.name}
+                                    </h3>
+                                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
+                                        {productDesc.brand && <Tag label={productDesc.brand} />}
+                                        {productDesc.category && <Tag label={productDesc.category} />}
+                                        {productDesc.size && <Tag label={productDesc.size} />}
+                                        {productDesc.colorway && <Tag label={productDesc.colorway} />}
+                                        {productDesc.condition && <Tag label={productDesc.condition} />}
+                                    </div>
+                                    {productDesc.max_price && (
+                                        <p
+                                            style={{
+                                                fontFamily: "var(--font-caveat), cursive",
+                                                fontSize: "1.1rem",
+                                                color: "#2e7d32",
+                                                margin: "8px 0 0",
+                                            }}
+                                        >
+                                            budget: ${productDesc.max_price}
+                                        </p>
+                                    )}
+                                </div>
                             )}
-                        </div>
-                    )}
 
-                    <div style={{ textAlign: "center" }}>
-                        <button
-                            onClick={confirmAndSearch}
-                            style={{
-                                fontFamily: "var(--font-playfair), 'Playfair Display', serif",
-                                fontSize: "1.05rem",
-                                fontStyle: "italic",
-                                background: "#1a1208",
-                                color: "#faf4e8",
-                                border: "none",
-                                borderRadius: 28,
-                                padding: "14px 40px",
-                                cursor: "pointer",
-                                transition: "transform 0.2s, box-shadow 0.2s",
-                                boxShadow: "0 4px 16px rgba(26, 18, 8, 0.18)",
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = "translateY(-2px)";
-                                e.currentTarget.style.boxShadow = "0 6px 20px rgba(26, 18, 8, 0.24)";
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = "translateY(0)";
-                                e.currentTarget.style.boxShadow = "0 4px 16px rgba(26, 18, 8, 0.18)";
-                            }}
-                        >
-                            looks good — find me deals →
-                        </button>
-                    </div>
+                            <div style={{ textAlign: "center" }}>
+                                <button
+                                    onClick={confirmAndSearch}
+                                    style={{
+                                        fontFamily: "var(--font-playfair), 'Playfair Display', serif",
+                                        fontSize: "1.05rem",
+                                        fontStyle: "italic",
+                                        background: "#1a1208",
+                                        color: "#faf4e8",
+                                        border: "none",
+                                        borderRadius: 28,
+                                        padding: "14px 40px",
+                                        cursor: "pointer",
+                                        transition: "transform 0.2s, box-shadow 0.2s",
+                                        boxShadow: "0 4px 16px rgba(26, 18, 8, 0.18)",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = "translateY(-2px)";
+                                        e.currentTarget.style.boxShadow = "0 6px 20px rgba(26, 18, 8, 0.24)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = "translateY(0)";
+                                        e.currentTarget.style.boxShadow = "0 4px 16px rgba(26, 18, 8, 0.18)";
+                                    }}
+                                >
+                                    looks good — find me deals →
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </div>
             )}
 

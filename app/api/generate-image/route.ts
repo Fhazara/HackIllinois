@@ -3,19 +3,28 @@ import { NextRequest, NextResponse } from "next/server";
 const MODAL_URL = process.env.MODAL_URL;
 
 // GET /api/generate-image?q=black+dunk+low&seed=42
-// Proxies the request to the Modal image generation endpoint.
-// Returns the generated PNG image.
+// When MODAL_URL is set: proxies to Modal image generation and returns PNG.
+// When MODAL_URL is not set: returns a placeholder PNG so reference tiles still load.
 export async function GET(request: NextRequest) {
     try {
-        if (!MODAL_URL) {
-            return NextResponse.json(
-                { error: "MODAL_URL is not configured" },
-                { status: 500 }
-            );
-        }
-
         const { searchParams } = new URL(request.url);
         const q = searchParams.get("q");
+
+        if (!MODAL_URL) {
+            // No image backend: return placeholder PNG so references "load" and UI works
+            const placeholderUrl = `https://placehold.co/400x400/e8dfd0/9b8260?text=Reference${q ? "+" + encodeURIComponent(q.slice(0, 12)) : ""}`;
+            const res = await fetch(placeholderUrl);
+            if (!res.ok) throw new Error("Placeholder fetch failed");
+            const buf = await res.arrayBuffer();
+            return new NextResponse(buf, {
+                status: 200,
+                headers: {
+                    "Content-Type": "image/png",
+                    "Cache-Control": "public, max-age=3600",
+                },
+            });
+        }
+
         const seed = searchParams.get("seed");
         const debug = searchParams.get("debug");
 
