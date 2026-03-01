@@ -111,11 +111,7 @@ def scrape_marketplace(site: str, query: str, budget: float) -> list[dict]:
             },
             json={
                 "url": target_url,
-                "target": "universal",
-                "locale": "en-US",
                 "geo": "United States",
-                "device_type": "desktop",
-                "headless": "html",
             },
             timeout=60,
         )
