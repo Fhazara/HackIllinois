@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   serverExternalPackages: ["@prisma/client"],
   // Avoid loading Sharp on Linux (common cause of Bus error / SIGBUS in production).
   images: { unoptimized: true },
