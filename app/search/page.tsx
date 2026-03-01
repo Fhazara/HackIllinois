@@ -78,8 +78,8 @@ function SearchPageContent() {
             // If the LLM is done asking questions
             if (!data.needs_more_info && data.product_description) {
                 setProductDesc(data.product_description);
-                // Generate reference images
-                generateImages(data.product_description);
+                // Generate reference images and wait for them to preload
+                await generateImages(data.product_description);
             }
         } catch (err) {
             const errorMsg: Message = {
@@ -93,7 +93,6 @@ function SearchPageContent() {
     }
 
     async function generateImages(desc: ProductDescription) {
-        setPhase("images");
         const prompts = [
             desc.image_prompt,
             `${desc.name} ${desc.brand || ""} product photo`,
@@ -105,7 +104,21 @@ function SearchPageContent() {
             const url = `/api/generate-image?q=${encodeURIComponent(prompt)}&seed=${Math.floor(Math.random() * 10000)}`;
             urls.push(url);
         }
+
+        // Preload images invisibly in background so the UI doesn't transition until they're ready
+        await Promise.all(
+            urls.map((url) => {
+                return new Promise((resolve) => {
+                    const img = new window.Image();
+                    img.onload = resolve;
+                    img.onerror = resolve;
+                    img.src = url;
+                });
+            })
+        );
+
         setGeneratedImages(urls);
+        setPhase("images");
     }
 
     function toggleRemoveImage(index: number) {

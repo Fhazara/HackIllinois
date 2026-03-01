@@ -142,6 +142,7 @@ export default function ResultsPage() {
     const [hoveredId, setHoveredId] = useState<number | string | null>(null);
     const [loaded, setLoaded] = useState(false);
     const [searchData, setSearchData] = useState<any>(null);
+    const [imagesLoaded, setImagesLoaded] = useState<Record<string | number, boolean>>({});
 
     useEffect(() => {
         // Load real data from sessionStorage if available
@@ -352,13 +353,15 @@ export default function ResultsPage() {
                                 <img
                                     src={imgUrl}
                                     alt={item.name}
+                                    onLoad={() => setImagesLoaded(prev => ({ ...prev, [uniqueId]: true }))}
                                     style={{
                                         width: "100%",
                                         height: "auto",
                                         objectFit: "cover",
                                         display: "block",
-                                        transition: "transform 0.4s ease",
+                                        transition: "transform 0.4s ease, opacity 0.4s ease-in-out",
                                         transform: isHovered ? "scale(1.03)" : "scale(1)",
+                                        opacity: imagesLoaded[uniqueId] ? 1 : 0,
                                     }}
                                 />
                                 {/* Source badge */}
