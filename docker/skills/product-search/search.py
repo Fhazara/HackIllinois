@@ -26,14 +26,24 @@ DECODO_API_URL = "https://scraper-api.decodo.com/v2/scrape"
 DECODO_TOKEN = os.environ.get("DECODO_TOKEN", "")
 
 # ── Marketplace search URL templates ──
-# Each returns a search results page URL for the given query
-MARKETPLACE_URLS = {
+# URLs optimized for relevance/best match (Original behavior)
+MARKETPLACE_URLS_RELEVANCE = {
     "ebay": "https://www.ebay.com/sch/i.html?_nkw={query}&_sop=15&LH_BIN=1&_udhi={budget}",
     "depop": "https://www.depop.com/search/?q={query}&sort=relevance&priceMax={budget}",
     "poshmark": "https://poshmark.com/search?query={query}&max_price={budget}&availability=available",
     "etsy": "https://www.etsy.com/search?q={query}&max={budget}&explicit=1&ship_to=US",
     "craigslist": "https://www.craigslist.org/search/sss?query={query}&max_price={budget}&sort=rel",
     "facebook_marketplace": "https://www.facebook.com/marketplace/search/?query={query}&maxPrice={budget}&exact=false",
+}
+
+# URLs optimized for finding newly listed items (For Cron Notifications)
+MARKETPLACE_URLS_NEW = {
+    "ebay": "https://www.ebay.com/sch/i.html?_nkw={query}&_sop=10&LH_BIN=1&_udhi={budget}",
+    "depop": "https://www.depop.com/search/?q={query}&sort=newlyListed&priceMax={budget}",
+    "poshmark": "https://poshmark.com/search?query={query}&max_price={budget}&availability=available&sort_by=added_desc",
+    "etsy": "https://www.etsy.com/search?q={query}&max={budget}&explicit=1&ship_to=US&order=date_desc",
+    "craigslist": "https://www.craigslist.org/search/sss?query={query}&max_price={budget}&sort=date",
+    "facebook_marketplace": "https://www.facebook.com/marketplace/search/?query={query}&maxPrice={budget}&exact=false&sortBy=creation_time_desc",
 }
 
 # ── CSS selectors for extracting product data from each marketplace ──
@@ -89,16 +99,17 @@ MARKETPLACE_SELECTORS = {
 }
 
 
-def scrape_marketplace(site: str, query: str, budget: float) -> list[dict]:
+def scrape_marketplace(site: str, query: str, budget: float, sort_new: bool = False) -> list[dict]:
     """
     Scrape a single marketplace using the Decodo API.
     Returns a list of product dicts.
     """
-    if site not in MARKETPLACE_URLS:
+    url_source = MARKETPLACE_URLS_NEW if sort_new else MARKETPLACE_URLS_RELEVANCE
+    if site not in url_source:
         print(f"⚠ Unknown marketplace: {site}", file=sys.stderr)
         return []
 
-    url_template = MARKETPLACE_URLS[site]
+    url_template = url_source[site]
     target_url = url_template.format(query=quote_plus(query), budget=int(budget))
     selectors = MARKETPLACE_SELECTORS.get(site, {})
 
@@ -240,6 +251,11 @@ def main():
         default="ebay,depop,poshmark,etsy,craigslist",
         help="Comma-separated list of marketplaces to search",
     )
+    parser.add_argument(
+        "--sort-new",
+        action="store_true",
+        help="Sort results by newly listed (useful for cron jobs)",
+    )
     args = parser.parse_args()
 
     sites = [s.strip() for s in args.sites.split(",")]
@@ -259,8 +275,9 @@ def main():
     errors = []
 
     for site in sites:
-        print(f"⟳ Searching {format_source_name(site)}...", file=sys.stderr)
-        results = scrape_marketplace(site, args.query, args.budget)
+        sort_mode_text = "newly listed" if args.sort_new else "relevance"
+        print(f"⟳ Searching {format_source_name(site)} (by {sort_mode_text})...", file=sys.stderr)
+        results = scrape_marketplace(site, args.query, args.budget, sort_new=args.sort_new)
         if results:
             all_results.extend(results)
             print(f"  ✓ Found {len(results)} results on {format_source_name(site)}", file=sys.stderr)

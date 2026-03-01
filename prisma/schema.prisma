@@ -1,5 +1,3 @@
-// Prisma schema for Thrift — product search assistant
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -10,25 +8,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ─── Models ────────────────────────────────────────────────────────────────────
-
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
+  id             String          @id @default(cuid())
+  email          String          @unique
+  name           String?
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
   searchRequests SearchRequest[]
 
   @@map("users")
-}
-
-enum SearchRequestStatus {
-  PENDING
-  IN_PROGRESS
-  COMPLETED
-  CANCELLED
 }
 
 model SearchRequest {
@@ -36,15 +24,13 @@ model SearchRequest {
   title       String
   description String
   budget      Float?
-  imageUrl    String?             @map("image_url") // AI-generated product image
   status      SearchRequestStatus @default(PENDING)
   createdAt   DateTime            @default(now()) @map("created_at")
   updatedAt   DateTime            @updatedAt @map("updated_at")
-
-  userId String @map("user_id")
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  results ProductResult[]
+  userId      String              @map("user_id")
+  imageUrl    String?             @map("image_url")
+  results     ProductResult[]
+  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([status])
@@ -52,18 +38,49 @@ model SearchRequest {
 }
 
 model ProductResult {
-  id         String   @id @default(cuid())
-  name       String
-  price      Float?
-  url        String
-  imageUrl   String?  @map("image_url")
-  source     String? // e.g. "eBay", "Facebook Marketplace", "Craigslist"
-  matchNotes String?  @map("match_notes") // why this result matches the request
-  createdAt  DateTime @default(now()) @map("created_at")
-
+  id              String        @id @default(cuid())
+  name            String
+  price           Float?
+  url             String
+  imageUrl        String?       @map("image_url")
+  source          String?
+  matchNotes      String?       @map("match_notes")
+  createdAt       DateTime      @default(now()) @map("created_at")
   searchRequestId String        @map("search_request_id")
   searchRequest   SearchRequest @relation(fields: [searchRequestId], references: [id], onDelete: Cascade)
 
   @@index([searchRequestId])
   @@map("product_results")
+}
+
+model AlertSubscription {
+  id              String     @id @default(cuid())
+  email           String?
+  phone           String?
+  last_checked_at DateTime?
+  created_at      DateTime   @default(now())
+  query           String
+  budget          Float?
+  is_active       Boolean    @default(true)
+  seen_items      SeenItem[]
+
+  @@map("alert_subscriptions")
+}
+
+model SeenItem {
+  id                  String            @id @default(cuid())
+  url                 String
+  created_at          DateTime          @default(now())
+  subscription_id     String
+  alert_subscriptions AlertSubscription @relation(fields: [subscription_id], references: [id], onDelete: Cascade)
+
+  @@unique([subscription_id, url])
+  @@map("seen_items")
+}
+
+enum SearchRequestStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
 }

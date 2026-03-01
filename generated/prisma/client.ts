@@ -59,3 +59,13 @@ export type SearchRequest = Prisma.SearchRequestModel
  * 
  */
 export type ProductResult = Prisma.ProductResultModel
+/**
+ * Model AlertSubscription
+ * 
+ */
+export type AlertSubscription = Prisma.AlertSubscriptionModel
+/**
+ * Model SeenItem
+ * 
+ */
+export type SeenItem = Prisma.SeenItemModel

@@ -62,3 +62,15 @@ The agent responsible for actually surfing Etsy, eBay, etc., runs inside a Docke
    npm run dev
    ```
 5. Navigate to `http://localhost:3000` to begin your product search!
+
+## 4. Run the Notification Scheduler (Optional)
+
+Users can opt in to automatically receive SMS/Email notifications every 15 minutes whenever new listings matching their search are scraped.
+
+1. Ensure both the Next.js development server (Step 3) and the Docker container (Step 2) are running.
+2. Ensure you have injected your `MAILJET_SENDER_EMAIL` inside the root `.env` file (and verified the email address identity actively in your MailJet dashboard settings so it does not result in a 401 Unauthorized block).
+3. In a new terminal tab, run the scheduled Node orchestrator:
+   ```bash
+   node check_alerts.js
+   ```
+4. The background process will concurrently trigger the Openclaw Python scraper and physically dispatch the beautiful HTML notification alerts directly to the user's Inbox!
