@@ -144,6 +144,12 @@ export default function ResultsPage() {
     const [searchData, setSearchData] = useState<any>(null);
     const [imagesLoaded, setImagesLoaded] = useState<Record<string | number, boolean>>({});
 
+    // Alert subscription state
+    const [isAlertMenuOpen, setIsAlertMenuOpen] = useState(false);
+    const [notifyEmail, setNotifyEmail] = useState("");
+    const [notifyPhone, setNotifyPhone] = useState("");
+    const [notifyStatus, setNotifyStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+
     useEffect(() => {
         // Load real data from sessionStorage if available
         try {
@@ -168,6 +174,31 @@ export default function ResultsPage() {
     };
 
     const displayResults = searchData?.results?.length > 0 ? searchData.results : sampleResults;
+
+    const handleSubscribe = async () => {
+        if (!notifyEmail && !notifyPhone) return;
+        setNotifyStatus("loading");
+        try {
+            const res = await fetch("/api/alerts", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email: notifyEmail,
+                    phone: notifyPhone,
+                    query: displayQuery.query || displayQuery.description,
+                    budget: displayQuery.budget,
+                }),
+            });
+            if (res.ok) {
+                setNotifyStatus("success");
+                setTimeout(() => setIsAlertMenuOpen(false), 3000);
+            } else {
+                setNotifyStatus("error");
+            }
+        } catch {
+            setNotifyStatus("error");
+        }
+    };
 
     return (
         <div
@@ -270,6 +301,103 @@ export default function ResultsPage() {
                         {displayQuery.status === "COMPLETED"
                             ? "✓ search complete"
                             : "↻ still looking..."}
+                    </div>
+                    <div style={{ position: "relative" }}>
+                        <button
+                            onClick={() => setIsAlertMenuOpen(!isAlertMenuOpen)}
+                            style={{
+                                background: "rgba(155, 130, 96, 0.12)",
+                                border: "none",
+                                borderRadius: 20,
+                                padding: "8px 18px",
+                                fontFamily: "var(--font-caveat), cursive",
+                                fontSize: "1.05rem",
+                                color: "#6b5a3e",
+                                cursor: "pointer",
+                                transition: "background 0.2s",
+                            }}
+                            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(155, 130, 96, 0.2)")}
+                            onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(155, 130, 96, 0.12)")}
+                        >
+                            🔔 notify me
+                        </button>
+
+                        {/* Dropdown Menu */}
+                        {isAlertMenuOpen && (
+                            <div
+                                style={{
+                                    position: "absolute",
+                                    top: "120%",
+                                    right: 0,
+                                    width: 320,
+                                    background: "#fdfbz4",
+                                    backgroundColor: "rgba(250, 244, 232, 0.95)",
+                                    backdropFilter: "blur(10px)",
+                                    boxShadow: "0 10px 30px rgba(26, 18, 8, 0.1)",
+                                    borderRadius: 12,
+                                    padding: 20,
+                                    zIndex: 100,
+                                    border: "1px solid rgba(155, 130, 96, 0.2)",
+                                }}
+                            >
+                                <h4 style={{ margin: "0 0 12px", fontFamily: "var(--font-playfair), serif", color: "#1a1208", fontSize: "1.1rem" }}>
+                                    get alerted
+                                </h4>
+                                <p style={{ margin: "0 0 16px", fontFamily: "var(--font-caveat), cursive", color: "#6b5a3e", fontSize: "1.05rem" }}>
+                                    we check every 15 min for new listings matching this search!
+                                </p>
+                                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                                    <input
+                                        type="email"
+                                        placeholder="email address"
+                                        value={notifyEmail}
+                                        onChange={(e) => setNotifyEmail(e.target.value)}
+                                        style={{
+                                            padding: "10px 14px",
+                                            borderRadius: 6,
+                                            border: "1px solid rgba(155, 130, 96, 0.3)",
+                                            background: "rgba(255, 255, 255, 0.5)",
+                                            fontFamily: "var(--font-playfair), serif",
+                                            fontSize: "0.95rem",
+                                        }}
+                                    />
+                                    <input
+                                        type="tel"
+                                        placeholder="phone number (optional)"
+                                        value={notifyPhone}
+                                        onChange={(e) => setNotifyPhone(e.target.value)}
+                                        style={{
+                                            padding: "10px 14px",
+                                            borderRadius: 6,
+                                            border: "1px solid rgba(155, 130, 96, 0.3)",
+                                            background: "rgba(255, 255, 255, 0.5)",
+                                            fontFamily: "var(--font-playfair), serif",
+                                            fontSize: "0.95rem",
+                                        }}
+                                    />
+                                    <button
+                                        onClick={handleSubscribe}
+                                        disabled={notifyStatus === "loading" || notifyStatus === "success" || (!notifyEmail && !notifyPhone)}
+                                        style={{
+                                            padding: "10px",
+                                            borderRadius: 6,
+                                            border: "none",
+                                            background: notifyStatus === "success" ? "#2e7d32" : "#9b8260",
+                                            color: "#fff",
+                                            fontFamily: "var(--font-playfair), serif",
+                                            fontSize: "1rem",
+                                            cursor: notifyStatus === "success" ? "default" : "pointer",
+                                            marginTop: 4,
+                                        }}
+                                    >
+                                        {notifyStatus === "loading" ? "subscribing..." : notifyStatus === "success" ? "✓ subscribed!" : "start tracking"}
+                                    </button>
+                                    {notifyStatus === "error" && (
+                                        <p style={{ margin: 0, color: "#e65100", fontSize: "0.85rem", textAlign: "center" }}>failed to subscribe.</p>
+                                    )}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </header>

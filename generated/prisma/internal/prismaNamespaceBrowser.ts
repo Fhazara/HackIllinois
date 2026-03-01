@@ -51,7 +51,9 @@ export const AnyNull = runtime.objectEnumValues.instances.AnyNull
 export const ModelName = {
   User: 'User',
   SearchRequest: 'SearchRequest',
-  ProductResult: 'ProductResult'
+  ProductResult: 'ProductResult',
+  AlertSubscription: 'AlertSubscription',
+  SeenItem: 'SeenItem'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -109,6 +111,30 @@ export const ProductResultScalarFieldEnum = {
 } as const
 
 export type ProductResultScalarFieldEnum = (typeof ProductResultScalarFieldEnum)[keyof typeof ProductResultScalarFieldEnum]
+
+
+export const AlertSubscriptionScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  phone: 'phone',
+  isActive: 'isActive',
+  lastCheckedAt: 'lastCheckedAt',
+  createdAt: 'createdAt',
+  query: 'query',
+  budget: 'budget'
+} as const
+
+export type AlertSubscriptionScalarFieldEnum = (typeof AlertSubscriptionScalarFieldEnum)[keyof typeof AlertSubscriptionScalarFieldEnum]
+
+
+export const SeenItemScalarFieldEnum = {
+  id: 'id',
+  url: 'url',
+  createdAt: 'createdAt',
+  subscriptionId: 'subscriptionId'
+} as const
+
+export type SeenItemScalarFieldEnum = (typeof SeenItemScalarFieldEnum)[keyof typeof SeenItemScalarFieldEnum]
 
 
 export const SortOrder = {

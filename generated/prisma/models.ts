@@ -11,4 +11,6 @@
 export type * from './models/User'
 export type * from './models/SearchRequest'
 export type * from './models/ProductResult'
+export type * from './models/AlertSubscription'
+export type * from './models/SeenItem'
 export type * from './commonInputTypes'

@@ -392,7 +392,9 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   User: 'User',
   SearchRequest: 'SearchRequest',
-  ProductResult: 'ProductResult'
+  ProductResult: 'ProductResult',
+  AlertSubscription: 'AlertSubscription',
+  SeenItem: 'SeenItem'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -408,7 +410,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "searchRequest" | "productResult"
+    modelProps: "user" | "searchRequest" | "productResult" | "alertSubscription" | "seenItem"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -634,6 +636,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    AlertSubscription: {
+      payload: Prisma.$AlertSubscriptionPayload<ExtArgs>
+      fields: Prisma.AlertSubscriptionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AlertSubscriptionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlertSubscriptionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AlertSubscriptionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlertSubscriptionPayload>
+        }
+        findFirst: {
+          args: Prisma.AlertSubscriptionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlertSubscriptionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AlertSubscriptionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlertSubscriptionPayload>
+        }
+        findMany: {
+          args: Prisma.AlertSubscriptionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlertSubscriptionPayload>[]
+        }
+        create: {
+          args: Prisma.AlertSubscriptionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlertSubscriptionPayload>
+        }
+        createMany: {
+          args: Prisma.AlertSubscriptionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AlertSubscriptionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlertSubscriptionPayload>[]
+        }
+        delete: {
+          args: Prisma.AlertSubscriptionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlertSubscriptionPayload>
+        }
+        update: {
+          args: Prisma.AlertSubscriptionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlertSubscriptionPayload>
+        }
+        deleteMany: {
+          args: Prisma.AlertSubscriptionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AlertSubscriptionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AlertSubscriptionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlertSubscriptionPayload>[]
+        }
+        upsert: {
+          args: Prisma.AlertSubscriptionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlertSubscriptionPayload>
+        }
+        aggregate: {
+          args: Prisma.AlertSubscriptionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAlertSubscription>
+        }
+        groupBy: {
+          args: Prisma.AlertSubscriptionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AlertSubscriptionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AlertSubscriptionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AlertSubscriptionCountAggregateOutputType> | number
+        }
+      }
+    }
+    SeenItem: {
+      payload: Prisma.$SeenItemPayload<ExtArgs>
+      fields: Prisma.SeenItemFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SeenItemFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SeenItemPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SeenItemFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SeenItemPayload>
+        }
+        findFirst: {
+          args: Prisma.SeenItemFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SeenItemPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SeenItemFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SeenItemPayload>
+        }
+        findMany: {
+          args: Prisma.SeenItemFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SeenItemPayload>[]
+        }
+        create: {
+          args: Prisma.SeenItemCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SeenItemPayload>
+        }
+        createMany: {
+          args: Prisma.SeenItemCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SeenItemCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SeenItemPayload>[]
+        }
+        delete: {
+          args: Prisma.SeenItemDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SeenItemPayload>
+        }
+        update: {
+          args: Prisma.SeenItemUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SeenItemPayload>
+        }
+        deleteMany: {
+          args: Prisma.SeenItemDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SeenItemUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SeenItemUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SeenItemPayload>[]
+        }
+        upsert: {
+          args: Prisma.SeenItemUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SeenItemPayload>
+        }
+        aggregate: {
+          args: Prisma.SeenItemAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSeenItem>
+        }
+        groupBy: {
+          args: Prisma.SeenItemGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SeenItemGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SeenItemCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SeenItemCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -712,6 +862,30 @@ export const ProductResultScalarFieldEnum = {
 } as const
 
 export type ProductResultScalarFieldEnum = (typeof ProductResultScalarFieldEnum)[keyof typeof ProductResultScalarFieldEnum]
+
+
+export const AlertSubscriptionScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  phone: 'phone',
+  isActive: 'isActive',
+  lastCheckedAt: 'lastCheckedAt',
+  createdAt: 'createdAt',
+  query: 'query',
+  budget: 'budget'
+} as const
+
+export type AlertSubscriptionScalarFieldEnum = (typeof AlertSubscriptionScalarFieldEnum)[keyof typeof AlertSubscriptionScalarFieldEnum]
+
+
+export const SeenItemScalarFieldEnum = {
+  id: 'id',
+  url: 'url',
+  createdAt: 'createdAt',
+  subscriptionId: 'subscriptionId'
+} as const
+
+export type SeenItemScalarFieldEnum = (typeof SeenItemScalarFieldEnum)[keyof typeof SeenItemScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -797,6 +971,13 @@ export type EnumSearchRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputTy
  * Reference to a field of type 'SearchRequestStatus[]'
  */
 export type ListEnumSearchRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SearchRequestStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -903,6 +1084,8 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   searchRequest?: Prisma.SearchRequestOmit
   productResult?: Prisma.ProductResultOmit
+  alertSubscription?: Prisma.AlertSubscriptionOmit
+  seenItem?: Prisma.SeenItemOmit
 }
 
 /* Types for Logging */

@@ -67,3 +67,33 @@ model ProductResult {
   @@index([searchRequestId])
   @@map("product_results")
 }
+
+model AlertSubscription {
+  id              String   @id @default(cuid())
+  email           String?
+  phone           String?
+  isActive        Boolean  @default(true)
+  lastCheckedAt   DateTime @default(now()) @map("last_checked_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  // The search configuration
+  query           String
+  budget          Float?
+
+  seenItems       SeenItem[]
+
+  @@map("alert_subscriptions")
+}
+
+model SeenItem {
+  id              String   @id @default(cuid())
+  url             String
+  createdAt       DateTime @default(now()) @map("created_at")
+  
+  subscriptionId  String   @map("subscription_id")
+  subscription    AlertSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  
+  @@unique([subscriptionId, url])
+  @@index([subscriptionId])
+  @@map("seen_items")
+}
