@@ -18,9 +18,9 @@ services:
       - .env
     environment:
       - HOST=0.0.0.0
-      # OpenClaw model config (GPT 5.0)
-      - OPENCLAW_MODEL=gpt-5
-      - OPENCLAW_MODEL_PROVIDER=openai
+      # OpenClaw model config (Gemini)
+      - OPENCLAW_MODEL=gemini-2.0-flash
+      - OPENCLAW_MODEL_PROVIDER=google
       # Python venv on PATH
       - PATH=/opt/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     volumes:

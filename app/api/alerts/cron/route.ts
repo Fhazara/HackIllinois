@@ -5,8 +5,8 @@ import { promisify } from "util";
 import Mailjet from "node-mailjet";
 
 const mailjet = new Mailjet({
-    apiKey: "b17aecb4ee1ad7d4f66a13c1a79e2ba0",
-    apiSecret: "4f9c07825df8de5b11ceb0af1d5b4b55"
+    apiKey: process.env.MAILJET_API_KEY ?? "",
+    apiSecret: process.env.MAILJET_API_SECRET ?? ""
 });
 
 const execFileAsync = promisify(execFile);

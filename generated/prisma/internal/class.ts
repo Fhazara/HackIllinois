@@ -23,7 +23,7 @@ const config: runtime.GetPrismaClientConfig = {
       "value": "prisma-client"
     },
     "output": {
-      "value": "/Users/ryanzhou/Downloads/thrift/generated/prisma",
+      "value": "/Users/abbas/HackIllinois/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -34,10 +34,14 @@ const config: runtime.GetPrismaClientConfig = {
         "fromEnvVar": null,
         "value": "darwin-arm64",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-3.0.x"
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/ryanzhou/Downloads/thrift/prisma/schema.prisma",
+    "sourceFilePath": "/Users/abbas/HackIllinois/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativePath": "../../prisma",
@@ -56,8 +60,8 @@ const config: runtime.GetPrismaClientConfig = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id             String          @id @default(cuid())\n  email          String          @unique\n  name           String?\n  createdAt      DateTime        @default(now()) @map(\"created_at\")\n  updatedAt      DateTime        @updatedAt @map(\"updated_at\")\n  searchRequests SearchRequest[]\n\n  @@map(\"users\")\n}\n\nmodel SearchRequest {\n  id          String              @id @default(cuid())\n  title       String\n  description String\n  budget      Float?\n  status      SearchRequestStatus @default(PENDING)\n  createdAt   DateTime            @default(now()) @map(\"created_at\")\n  updatedAt   DateTime            @updatedAt @map(\"updated_at\")\n  userId      String              @map(\"user_id\")\n  imageUrl    String?             @map(\"image_url\")\n  results     ProductResult[]\n  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([userId])\n  @@index([status])\n  @@map(\"search_requests\")\n}\n\nmodel ProductResult {\n  id              String        @id @default(cuid())\n  name            String\n  price           Float?\n  url             String\n  imageUrl        String?       @map(\"image_url\")\n  source          String?\n  matchNotes      String?       @map(\"match_notes\")\n  createdAt       DateTime      @default(now()) @map(\"created_at\")\n  searchRequestId String        @map(\"search_request_id\")\n  searchRequest   SearchRequest @relation(fields: [searchRequestId], references: [id], onDelete: Cascade)\n\n  @@index([searchRequestId])\n  @@map(\"product_results\")\n}\n\nmodel AlertSubscription {\n  id              String     @id @default(cuid())\n  email           String?\n  phone           String?\n  last_checked_at DateTime?\n  created_at      DateTime   @default(now())\n  query           String\n  budget          Float?\n  is_active       Boolean    @default(true)\n  seen_items      SeenItem[]\n\n  @@map(\"alert_subscriptions\")\n}\n\nmodel SeenItem {\n  id                  String            @id @default(cuid())\n  url                 String\n  created_at          DateTime          @default(now())\n  subscription_id     String\n  alert_subscriptions AlertSubscription @relation(fields: [subscription_id], references: [id], onDelete: Cascade)\n\n  @@unique([subscription_id, url])\n  @@map(\"seen_items\")\n}\n\nenum SearchRequestStatus {\n  PENDING\n  IN_PROGRESS\n  COMPLETED\n  CANCELLED\n}\n",
-  "inlineSchemaHash": "f474d8c070bf2ae6a135359277c21641633db2fcaf26c34d23f7262e2d8d655a",
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client\"\n  output        = \"../generated/prisma\"\n  binaryTargets = [\"native\", \"debian-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id             String          @id @default(cuid())\n  email          String          @unique\n  name           String?\n  createdAt      DateTime        @default(now()) @map(\"created_at\")\n  updatedAt      DateTime        @updatedAt @map(\"updated_at\")\n  searchRequests SearchRequest[]\n\n  @@map(\"users\")\n}\n\nmodel SearchRequest {\n  id          String              @id @default(cuid())\n  title       String\n  description String\n  budget      Float?\n  status      SearchRequestStatus @default(PENDING)\n  createdAt   DateTime            @default(now()) @map(\"created_at\")\n  updatedAt   DateTime            @updatedAt @map(\"updated_at\")\n  userId      String              @map(\"user_id\")\n  imageUrl    String?             @map(\"image_url\")\n  results     ProductResult[]\n  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([userId])\n  @@index([status])\n  @@map(\"search_requests\")\n}\n\nmodel ProductResult {\n  id              String        @id @default(cuid())\n  name            String\n  price           Float?\n  url             String\n  imageUrl        String?       @map(\"image_url\")\n  source          String?\n  matchNotes      String?       @map(\"match_notes\")\n  createdAt       DateTime      @default(now()) @map(\"created_at\")\n  searchRequestId String        @map(\"search_request_id\")\n  searchRequest   SearchRequest @relation(fields: [searchRequestId], references: [id], onDelete: Cascade)\n\n  @@index([searchRequestId])\n  @@map(\"product_results\")\n}\n\nmodel AlertSubscription {\n  id              String     @id @default(cuid())\n  email           String?\n  phone           String?\n  last_checked_at DateTime?\n  created_at      DateTime   @default(now())\n  query           String\n  budget          Float?\n  is_active       Boolean    @default(true)\n  seen_items      SeenItem[]\n\n  @@map(\"alert_subscriptions\")\n}\n\nmodel SeenItem {\n  id                  String            @id @default(cuid())\n  url                 String\n  created_at          DateTime          @default(now())\n  subscription_id     String\n  alert_subscriptions AlertSubscription @relation(fields: [subscription_id], references: [id], onDelete: Cascade)\n\n  @@unique([subscription_id, url])\n  @@map(\"seen_items\")\n}\n\nenum SearchRequestStatus {\n  PENDING\n  IN_PROGRESS\n  COMPLETED\n  CANCELLED\n}\n",
+  "inlineSchemaHash": "2908da28731a661326ee114b0a8b3e3e0cff564e3e20569d0471339a74867bfa",
   "copyEngine": true,
   "runtimeDataModel": {
     "models": {},

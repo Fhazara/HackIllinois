@@ -11,8 +11,8 @@ cp .env.example .env
 ```
 
 Edit `.env` and fill in your API keys:
-- **OpenAI API Key** — get one at [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
-- **Decodo credentials** — sign up at [decodo.com](https://decodo.com), get username/password from the Dashboard → Scraper tab
+- **GEMINI_API_KEY** — get one at [Google AI Studio](https://aistudio.google.com/apikey) (used by OpenClaw for the agent)
+- **DECODO_TOKEN** — sign up at [decodo.com](https://decodo.com), get your token from the Dashboard → Scraper tab
 
 ### 2. Build and run
 
