@@ -1,86 +1,20 @@
-# Thrift Product Search Agent 🦞
+# Thrift Scraper (OpenClaw + Decodo)
 
-Docker container running **OpenClaw** with **GPT 5.0** and **Decodo Web Scraping** to find second-hand products across multiple marketplaces.
+This container is the **product-search** leg of Thrift: it runs the OpenClaw agent that hits the Decodo API and returns live listings from eBay, Etsy, Depop, Poshmark, Craigslist, and Facebook Marketplace. The Next.js app calls it when a user confirms their search.
 
-## Quick Start
+**Setup**
 
-### 1. Set up credentials
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env` and fill in your API keys:
-- **GEMINI_API_KEY** — get one at [Google AI Studio](https://aistudio.google.com/apikey) (used by OpenClaw for the agent)
-- **DECODO_TOKEN** — sign up at [decodo.com](https://decodo.com), get your token from the Dashboard → Scraper tab
-
-### 2. Build and run
+1. Copy `.env.example` to `.env` (or create `.env`).
+2. Set `GEMINI_API_KEY` (Google AI Studio) and `DECODO_TOKEN` (decodo.com dashboard).
+3. Run:
 
 ```bash
 docker compose up -d --build
 ```
 
-### 3. Verify
+The agent listens on `localhost:18789`. The main app invokes it via `docker exec`; you can also use the OpenClaw UI at http://localhost:18789/ to test searches by hand.
 
-```bash
-# Check the container is running
-docker compose ps
+**Useful commands**
 
-# Check health
-curl http://localhost:18789/api/v1/health
-
-# Open the Control UI
-open http://localhost:18789/
-```
-
-### 4. Test a search
-
-From the Thrift Next.js app (running on `localhost:3000`):
-
-```bash
-curl -X POST http://localhost:3000/api/agent-search \
-  -H "Content-Type: application/json" \
-  -d '{"query": "vintage Levi 501 jeans", "budget": 75}'
-```
-
-Or interact directly with the agent via the OpenClaw Control UI at `http://localhost:18789/`.
-
-## Architecture
-
-```
-User → Next.js (/api/agent-search) → OpenClaw Agent → GPT 5.0
-                                          ↓
-                                    search.py (skill)
-                                          ↓
-                                   Decodo Scraping API
-                                          ↓
-                              eBay · Depop · Poshmark
-                              Etsy · Craigslist · FB Marketplace
-```
-
-## Files
-
-| File | Purpose |
-|------|---------|
-| `Dockerfile` | Node 22 + Python 3 + OpenClaw + scraping deps |
-| `docker-compose.yml` | Container orchestration with health checks |
-| `.env.example` | API key template |
-| `config/config.json` | OpenClaw model + agent config |
-| `skills/product-search/SKILL.md` | Agent skill instructions |
-| `skills/product-search/search.py` | Decodo scraping script |
-
-## Useful Commands
-
-```bash
-# Stop the agent
-docker compose down
-
-# View logs
-docker compose logs -f openclaw-agent
-
-# Rebuild after changes
-docker compose up -d --build
-
-# Shell into the container
-docker compose exec openclaw-agent bash
-```
+* Logs: `docker compose logs -f openclaw-agent`
+* Stop: `docker compose down`

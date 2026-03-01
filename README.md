@@ -1,148 +1,111 @@
-# Thrift — AI-Powered Second-Hand Product Discovery
+# Thrift
 
-An agentic product discovery platform that uses LLMs (Google Gemini 2.5 Flash) and a custom OpenClaw web scraping agent to find real second-hand and vintage products across eBay, Etsy, Depop, Poshmark, and Craigslist — all from a natural language query or uploaded image.
+# AI-Powered Second-Hand Product Discovery
 
-## Architecture
+## Inspiration
+
+We wanted to make finding second-hand and vintage stuff feel like asking a friend who actually knows where to look. Instead of opening five tabs and repeating the same search everywhere, you describe what you want — or upload a photo — and get real listings from eBay, Etsy, Depop, Poshmark, and Craigslist in one place. We combined an AI chat that refines your search with an agent that runs the scrapes and brought in preference memory so it remembers what you’re not into.
+
+---
+
+## What It Does
+
+* You type or speak what you’re looking for (e.g. “vintage Levi 501s under $50” or “mid-century desk lamp”). The AI asks follow-up questions when it needs to narrow things down.
+* You can upload a photo instead; the app figures out what to search for from the image.
+* We generate a few reference images (Stable Diffusion on Modal) so you can confirm we’re on the right track before digging into results.
+* An OpenClaw agent in Docker calls the Decodo API and returns live listings from the marketplaces above.
+* Optional email alerts every 15 minutes when new matching listings show up.
+* Supermemory stores your preferences across sessions so we don’t keep suggesting stuff you’ve already passed on.
+
+**Workflow:**
 
 ```
-User ──► Next.js Frontend ──► Modal LLM ("Omniscient Scout")
-              │                      │
-              │                      ├── Gemini 2.5 Flash (conversational AI)
-              │                      ├── Supermemory (preference memory)
-              │                      └── SD 3.5 Large Turbo (reference images)
-              │
-              ├── OpenClaw Docker Agent ──► Decodo Scraping API
-              │       (eBay, Etsy, Depop, Poshmark, Craigslist)
-              │
-              ├── PostgreSQL + Prisma (subscriptions, seen items)
-              │
-              └── MailJet (email notifications every 15 min)
+                    ┌─────────────────────────────────────────────────────────┐
+                    │                      USER                               │
+                    │         (query or image → refine → confirm)              │
+                    └─────────────────────────┬───────────────────────────────┘
+                                              │
+                                              ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                              Next.js (Frontend + API)                                             │
+│  session state · image upload · /api/agent-search · /api/alerts · Prisma (subscriptions, seen)   │
+└───┬─────────────────────┬─────────────────────┬─────────────────────┬───────────────────────────┘
+    │                     │                     │                     │
+    ▼                     ▼                     ▼                     ▼
+┌───────────────┐  ┌───────────────┐  ┌───────────────────┐  ┌─────────────────┐
+│ Modal (chat)  │  │ Modal (imgs)  │  │ OpenClaw (Docker)  │  │ MailJet + cron   │
+│ Gemini +      │  │ SD 3.5 Turbo  │  │ product-search     │  │ 15-min alerts    │
+│ Supermemory   │  │ 3 ref images  │  │ skill → Decodo API │  │                  │
+└───────────────┘  └───────────────┘  └─────────┬─────────┘  └─────────────────┘
+                                                  │
+                                                  ▼
+                                    eBay · Etsy · Depop · Poshmark · Craigslist · FB Marketplace
 ```
 
-- **Frontend/Backend:** Next.js 16 (React), session-based conversation state
-- **Conversational LLM:** Modal serverless Python app using Gemini 2.5 Flash with image understanding and Supermemory for cross-session preference recall
-- **AI Image Generation:** Stable Diffusion 3.5 Large Turbo on Modal A100 GPUs — generates 3 reference images for visual confirmation
-- **Agentic Scraper:** Containerized OpenClaw instance with the `product-search` skill, using the Decodo scraping API
-- **Notifications:** MailJet transactional emails triggered by a 15-minute cron scheduler
+---
 
-## Prerequisites
+## How We Built It
 
-- Node.js (v20+)
-- Docker Desktop
-- Python 3.12+ (for Modal CLI)
-- PostgreSQL (local or remote)
-- Accounts on [Modal](https://modal.com/), [Google AI Studio](https://aistudio.google.com/) (Gemini), [Decodo](https://decodo.com/), and [MailJet](https://www.mailjet.com/)
+* **Frontend & API:** Next.js 16 (React, TypeScript), session-based conversation state, image upload passed into the first message.
+* **Conversational AI:** A Modal serverless app using Google Gemini 2.5 Flash for multi-turn chat and image understanding, with Supermemory for cross-session preference recall.
+* **Reference images:** Stable Diffusion 3.5 Large Turbo on Modal A100 GPUs — we generate three distinct reference images per search.
+* **Product search:** A containerized OpenClaw instance with a custom `product-search` skill that calls the Decodo scraping API to hit eBay, Etsy, Depop, Poshmark, Craigslist, and Facebook Marketplace.
+* **Data:** PostgreSQL and Prisma for subscriptions and seen items; MailJet for transactional emails; a 15-minute cron (Modal or Next.js API) to send alert digests.
 
-## 1. Configure Modal Secrets
+---
 
-The LLM and image generation services run on Modal and require API keys stored as Modal secrets.
+## Challenges We Ran Into
 
-```bash
-# Install and authenticate Modal CLI
-pip install modal
-modal token new
+* **Cross-platform Prisma engine:** The app is built on a Mac but deployed on a Linux Droplet. Prisma’s query engine is platform-specific, so we had to add `debian-openssl-3.0.x` to the schema’s binary targets and copy the Linux engine into the Next.js standalone output (`.next/standalone/.next/server/chunks/`) so the deployed app could load it.
+* **Next.js 16 + standalone:** Making sure `public` and `.next/static` were correctly copied into the standalone build and that the server ran reliably under PM2 with limited memory took some iteration.
+* **Coordinating three runtimes:** Keeping the Next.js app, the Modal endpoints (chat + image gen), and the OpenClaw Docker agent in sync for local dev and production required clear env docs and a minimal deploy checklist.
 
-# Create required secrets
-modal secret create gemini-secret GEMINI_API_KEY="your-gemini-api-key"
-modal secret create supermemory-secret SUPERMEMORY_API_KEY="your-supermemory-api-key"
-```
+---
 
-## 2. Deploy the LLM Chat (Modal)
+## Accomplishments That We're Proud Of
 
-The "Omniscient Scout" conversational assistant is deployed to Modal. It handles multi-turn chat, image understanding, and generates 3 distinct reference image prompts.
+* End-to-end flow: natural language or image → AI refinement → real multi-marketplace results → optional email alerts.
+* Integrating Gemini (multimodal), Supermemory, OpenClaw, and Decodo into a single coherent product experience.
+* A deployable standalone build on a small DigitalOcean Droplet with the scraper running in Docker alongside the app.
+* Preference memory that actually carries across sessions so repeat users get smarter suggestions.
 
-```bash
-modal deploy modal/product_research_llm.py
-```
+---
 
-Copy the printed URL (e.g., `https://your-namespace--product-research-llm-chat.modal.run`) and set it as `MODAL_CHAT_URL` in the root `.env` file.
+## What We Learned
 
-## 3. Deploy AI Image Generation (Modal)
+* How Prisma’s binary targets and standalone output interact when building on one OS and deploying on another.
+* Practical use of agentic workflows (OpenClaw skills + Decodo) for real-world scraping and how to expose that cleanly through a Next.js API.
+* Balancing Modal serverless (great for bursty LLM and image workloads) with a long-lived Docker agent for scraping.
 
-The reference image generator uses Stable Diffusion 3.5 Large Turbo on A100 GPUs.
+---
 
-```bash
-modal deploy modal/image_gen_modal.py
-```
+## What's Next
 
-Copy the printed URL and set it as `MODAL_URL` in the root `.env` file.
+* Support for more marketplaces and filters (condition, location, seller rating).
+* Richer alert preferences (frequency, price range, keywords).
+* Optional vector search or embeddings to improve “find similar” and recommendations.
 
-## 4. Start the OpenClaw Scraping Agent (Docker)
+---
 
-The agent responsible for searching eBay, Etsy, Depop, Poshmark, and Craigslist runs inside a Docker container.
+## Try It Out
 
-1. Edit `docker/.env` with your API keys:
-   ```env
-   OPENAI_API_KEY=your-openai-key-here
-   DECODO_TOKEN=your-decodo-basic-auth-token-here
-   ```
-2. Start the Docker container:
-   ```bash
-   cd docker
-   docker compose up -d --build
-   ```
+**Live app:** [Add your live URL here, e.g. http://174.138.93.147:8080]
 
-The scraping agent binds to `localhost:18789` and the Next.js API executes its Python scraper directly via `docker exec`.
+**Run locally:** Node 20+, Docker, Python 3.12+ (Modal), PostgreSQL. Clone the repo, add `.env` (see root and `docker/`) with `DATABASE_URL`, `MODAL_CHAT_URL`, `MODAL_URL`, `GEMINI_API_KEY`, `DECODO_TOKEN`, `MAILJET_SENDER_EMAIL`. Then: `npm install` → deploy Modal apps (`modal deploy modal/product_research_llm.py`, `modal deploy modal/image_gen_modal.py`) → `cd docker && docker compose up -d --build` → `npx prisma generate && npx prisma db push` → `npm run dev`. Open [http://localhost:3000](http://localhost:3000). Full steps are in the repo; server deploy is in [docs/DROPLET_DEPLOY.md](docs/DROPLET_DEPLOY.md).
 
-## 5. Set Up the Database
+---
 
-```bash
-# Generate the Prisma client
-npx prisma generate
+## Built With
 
-# Push the schema to your PostgreSQL database
-npx prisma db push
-```
-
-## 6. Configure Environment Variables
-
-Edit the root `.env` file with your URLs and keys:
-
-```env
-DATABASE_URL="postgresql://user@localhost:5432/thrift?schema=public"
-MODAL_URL="https://your-namespace--product-image-gen-generate.modal.run"
-MODAL_CHAT_URL="https://your-namespace--product-research-llm-chat.modal.run"
-GEMINI_API_KEY="your-gemini-api-key"
-MAILJET_SENDER_EMAIL="your-verified-mailjet-sender@email.com"
-```
-
-## 7. Run the Next.js Frontend
-
-```bash
-npm install
-npm run dev
-```
-
-Navigate to `http://localhost:3000` to begin your product search!
-
-## 8. Run the Notification Scheduler (Optional)
-
-Users can subscribe to email alerts that fire every 15 minutes when new matching listings are scraped.
-
-**Option A — Modal Cron (Production):**
-```bash
-modal deploy modal/alert_cron.py
-```
-
-**Option B — Local Development:**
-The cron API endpoint can be triggered manually:
-```bash
-curl http://localhost:3000/api/alerts/cron
-```
-
-> **Note:** Ensure both the Next.js server and Docker container are running. The sender email must be verified in your [MailJet dashboard](https://app.mailjet.com/account/sender).
-
-## Key Features
-
-| Feature | Description |
-|---|---|
-| **Natural Language Search** | Describe what you want; the AI asks follow-up questions to refine |
-| **Image Upload** | Upload a photo and the AI identifies the product to search for |
-| **AI Reference Images** | 3 distinct Stable Diffusion reference images for visual confirmation |
-| **Multi-Marketplace** | Searches eBay, Etsy, Depop, Poshmark, and Craigslist simultaneously |
-| **Smart Notifications** | Email alerts every 15 min for new matching listings |
-| **Preference Memory** | Supermemory remembers what to avoid across sessions |
-
-## Tech Stack
-
-Next.js · React · TypeScript · Python · Gemini 2.5 Flash · Stable Diffusion 3.5 · Modal · PostgreSQL · Prisma · Docker · MailJet · Decodo · OpenClaw · Supermemory
+* Next.js
+* React
+* TypeScript
+* Prisma
+* PostgreSQL
+* Google Gemini
+* Modal
+* OpenClaw
+* Decodo
+* MailJet
+* Supermemory
+* Stable Diffusion (via Modal)
