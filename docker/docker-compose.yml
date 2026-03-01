@@ -9,7 +9,11 @@ services:
     container_name: thrift-product-agent
     restart: unless-stopped
     ports:
-      - "18789:18789"
+      - "127.0.0.1:18789:18789"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     env_file:
       - .env
     environment:

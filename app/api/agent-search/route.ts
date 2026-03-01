@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { exec } from "child_process";
+import { execFile } from "child_process";
 import { promisify } from "util";
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 export interface ProductSearchResult {
     name: string;
@@ -34,19 +34,33 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
         const { query, budget } = body;
 
-        if (!query || typeof query !== "string") {
+        // Validate and sanitize inputs
+        if (!query || typeof query !== "string" || query.trim().length === 0) {
             return NextResponse.json(
-                { error: "Missing required field: query" },
+                { error: "Missing or invalid required field: query" },
                 { status: 400 },
             );
         }
 
-        // Execute the python script inside the running Docker container
-        const command = `docker exec thrift-product-agent python3 /home/node/.openclaw/workspace/skills/product-search/search.py --query "${query.replace(/"/g, '\\"')}"` +
-            (budget ? ` --budget ${budget}` : "");
+        const parsedBudget = budget ? parseFloat(budget.toString()) : null;
 
-        console.log(`Executing Docker Scraper: ${command}`);
-        const { stdout, stderr } = await execAsync(command);
+        // Execute the python script inside the running Docker container using execFile (safe from shell injection)
+        const args = [
+            "exec",
+            "thrift-product-agent",
+            "python3",
+            "/home/node/.openclaw/workspace/skills/product-search/search.py",
+            "--query",
+            query.trim()
+        ];
+
+        if (parsedBudget && !isNaN(parsedBudget)) {
+            args.push("--budget", parsedBudget.toString());
+        }
+
+        console.log(`Executing Docker Scraper with args:`, args);
+        // We set maxBuffer to 10MB to accommodate large JSON outputs from OpenClaw
+        const { stdout, stderr } = await execFileAsync("docker", args, { maxBuffer: 1024 * 1024 * 10 });
 
         if (stderr && !stdout) {
             console.error("Docker Scraper stderr:", stderr);

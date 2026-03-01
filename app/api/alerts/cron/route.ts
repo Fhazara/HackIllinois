@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { exec } from "child_process";
+import { execFile } from "child_process";
 import { promisify } from "util";
 import Mailjet from "node-mailjet";
 
@@ -9,7 +9,7 @@ const mailjet = new Mailjet({
     apiSecret: "4f9c07825df8de5b11ceb0af1d5b4b55"
 });
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 export async function GET() {
     try {
@@ -25,11 +25,24 @@ export async function GET() {
         await Promise.all(activeAlerts.map(async (alert) => {
             console.log(`CRON: Checking new items for query "${alert.query}"`);
 
-            const command = `docker exec thrift-product-agent python3 /home/node/.openclaw/workspace/skills/product-search/search.py --query "${alert.query.replace(/"/g, '\\"')}" --sort-new` +
-                (alert.budget ? ` --budget ${alert.budget}` : "");
+            // Use execFile to prevent shell injection vulnerabilities
+            const args = [
+                "exec",
+                "thrift-product-agent",
+                "python3",
+                "/home/node/.openclaw/workspace/skills/product-search/search.py",
+                "--query",
+                alert.query,
+                "--sort-new"
+            ];
+
+            // alert.budget is safe (Float? from Prisma), but we pass it as a distinct argument anyway
+            if (alert.budget !== null && alert.budget !== undefined) {
+                args.push("--budget", alert.budget.toString());
+            }
 
             try {
-                const { stdout, stderr } = await execAsync(command, { maxBuffer: 1024 * 1024 * 10 });
+                const { stdout, stderr } = await execFileAsync("docker", args, { maxBuffer: 1024 * 1024 * 10 });
 
                 let parsedData;
                 try {
