@@ -4,7 +4,7 @@ import Link from "next/link";
 export default async function UnsubscribePage({
     searchParams,
 }: {
-    searchParams: { id?: string };
+    searchParams: Promise<{ id?: string }>;
 }) {
     const { id } = await searchParams;
 
