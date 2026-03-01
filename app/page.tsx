@@ -20,10 +20,15 @@ const scrapbookItems = [
   { id: 12, src: "/top.png", label: "top", top: "calc(97% - 216px)", left: "calc(86% - 176px)", rotation: -13, duration: 10.3, delay: 3.4, w: 176, h: 216 },
 ];
 
+const SEARCH_IMAGE_KEY = "searchImage";
+const SEARCH_IMAGE_PROMPT_KEY = "searchImagePrompt";
+
 export default function Home() {
   const router = useRouter();
   const [query, setQuery] = useState("");
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [exploded, setExploded] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [positions, setPositions] = useState<Record<number, { x: number; y: number }>>({});
   const [dragOrder, setDragOrder] = useState(scrapbookItems.map((i) => i.id));
   const dragRef = useRef<{ id: number; offsetX: number; offsetY: number; startX: number; startY: number } | null>(null);
@@ -66,6 +71,28 @@ export default function Home() {
 
   const onClickItem = (label: string) => {
     if (!didDragRef.current) setQuery(label);
+  };
+
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !file.type.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = () => setUploadedImage(reader.result as string);
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const goToSearch = () => {
+    const text = query.trim() || (uploadedImage ? "What is this? Find items like this or that match it." : "");
+    if (!text && !uploadedImage) return;
+    if (uploadedImage) {
+      const [mimePart, b64] = uploadedImage.includes(",") ? uploadedImage.split(",") : ["", uploadedImage];
+      const mime = mimePart.replace("data:", "").replace(";base64", "") || "image/jpeg";
+      sessionStorage.setItem(SEARCH_IMAGE_KEY, b64);
+      sessionStorage.setItem("searchImageMime", mime);
+      sessionStorage.setItem(SEARCH_IMAGE_PROMPT_KEY, text);
+    }
+    router.push(`/search?q=${encodeURIComponent(text)}`);
   };
 
   const sortedItems = [...scrapbookItems].sort(
@@ -153,45 +180,88 @@ export default function Home() {
             what do you want to buy?
           </h1>
 
-          <div style={{ display: "flex", alignItems: "flex-end", gap: 12 }}>
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && query.trim() && router.push(`/search?q=${encodeURIComponent(query)}`)}
-              placeholder="a vintage leather jacket..."
-              autoFocus
-              style={{
-                fontFamily: "var(--font-playfair), 'Playfair Display', Georgia, serif",
-                fontSize: "1.1rem",
-                fontStyle: "italic",
-                background: "transparent",
-                border: "none",
-                borderBottom: "1.5px solid #9b8260",
-                outline: "none",
-                color: "#1a1208",
-                caretColor: "#9b8260",
-                paddingBottom: 6,
-                width: 288,
-              }}
-            />
-            <button
-              onClick={() => query.trim() && router.push(`/search?q=${encodeURIComponent(query)}`)}
-              style={{
-                background: "none",
-                border: "none",
-                color: "#9b8260",
-                fontSize: "1.6rem",
-                lineHeight: 1,
-                paddingBottom: 4,
-                cursor: "pointer",
-                transition: "transform 0.2s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.transform = "translateX(4px)")}
-              onMouseLeave={(e) => (e.currentTarget.style.transform = "translateX(0)")}
-            >
-              →
-            </button>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
+            <div style={{ display: "flex", alignItems: "flex-end", gap: 12 }}>
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && goToSearch()}
+                placeholder="a vintage jacket... or find furniture that matches this room"
+                autoFocus
+                style={{
+                  fontFamily: "var(--font-playfair), 'Playfair Display', Georgia, serif",
+                  fontSize: "1.1rem",
+                  fontStyle: "italic",
+                  background: "transparent",
+                  border: "none",
+                  borderBottom: "1.5px solid #9b8260",
+                  outline: "none",
+                  color: "#1a1208",
+                  caretColor: "#9b8260",
+                  paddingBottom: 6,
+                  width: 320,
+                }}
+              />
+              <button
+                onClick={goToSearch}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: (query.trim() || uploadedImage) ? "#9b8260" : "#ccc",
+                  fontSize: "1.6rem",
+                  lineHeight: 1,
+                  paddingBottom: 4,
+                  cursor: (query.trim() || uploadedImage) ? "pointer" : "default",
+                  transition: "transform 0.2s",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.transform = (query.trim() || uploadedImage) ? "translateX(4px)" : "none")}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = "translateX(0)")}
+              >
+                →
+              </button>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={onFileChange}
+                style={{ display: "none" }}
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                style={{
+                  fontFamily: "var(--font-caveat), cursive",
+                  fontSize: "1rem",
+                  color: "#9b8260",
+                  background: "none",
+                  border: "1px dashed #9b8260",
+                  borderRadius: 8,
+                  padding: "8px 14px",
+                  cursor: "pointer",
+                }}
+              >
+                {uploadedImage ? "✓ Image attached" : "Upload image"}
+              </button>
+              {uploadedImage && (
+                <button
+                  type="button"
+                  onClick={() => setUploadedImage(null)}
+                  style={{
+                    fontFamily: "var(--font-caveat), cursive",
+                    fontSize: "0.9rem",
+                    color: "#8b7355",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                  }}
+                >
+                  Remove
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
